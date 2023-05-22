@@ -154,6 +154,8 @@ defmodule Protobuf.Encoder do
     end)
   end
 
+  defp encode_unknown_fields(_message), do: []
+
   defp transform_module(message, module) do
     if transform_module = module.transform_module() do
       transform_module.encode(message, module)
