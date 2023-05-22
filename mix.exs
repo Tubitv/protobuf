@@ -1,8 +1,8 @@
 defmodule Protobuf.Mixfile do
   use Mix.Project
 
-  @source_url "https://github.com/elixir-protobuf/protobuf"
-  @version "0.11.0"
+  @source_url "https://github.com/Tubitv/protobuf"
+  @version "0.11.1"
   @description "A pure Elixir implementation of Google Protobuf."
 
   def project do
@@ -63,7 +63,8 @@ defmodule Protobuf.Mixfile do
 
   defp package do
     [
-      maintainers: ["Bing Han", "Andrea Leopardi"],
+      organization: "tubitv",
+      maintainers: "",
       licenses: ["MIT"],
       files: ~w(
         mix.exs
