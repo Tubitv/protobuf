@@ -31,7 +31,7 @@ defmodule Protobuf.EncoderTest.Validation do
     assert_invalid = fn type, others ->
       Enum.each(other_types(others), fn {invalid, err_type} ->
         assert_raise err_type, fn ->
-          Protobuf.Wire.from_proto(type, invalid)
+          Protobuf.Wire.encode(type, invalid)
         end
       end)
     end
@@ -111,7 +111,7 @@ defmodule Protobuf.EncoderTest.Validation do
   test "oneof field doesn't match" do
     msg = TestMsg.Oneof.new(first: {:c, 42})
 
-    assert_raise Protobuf.EncodeError, ~r/:c doesn't belongs to TestMsg.Oneof#first/, fn ->
+    assert_raise Protobuf.EncodeError, ~r/:c doesn't belong to TestMsg.Oneof#first/, fn ->
       Protobuf.Encoder.encode(msg)
     end
   end
@@ -120,6 +120,14 @@ defmodule Protobuf.EncoderTest.Validation do
     msg = TestMsg.Oneof.new(first: {:a, "abc"})
 
     assert_raise Protobuf.EncodeError, ~r/TestMsg.Oneof#a.*Protobuf.TypeEncodeError/, fn ->
+      Protobuf.Encoder.encode(msg)
+    end
+  end
+
+  test "oneof field is non-existent" do
+    msg = TestMsg.OneofProto3.new(first: {:x, "foo"})
+
+    assert_raise Protobuf.EncodeError, ~r/:x wasn't found in TestMsg.OneofProto3#first/, fn ->
       Protobuf.Encoder.encode(msg)
     end
   end

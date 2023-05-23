@@ -1,62 +1,81 @@
 defmodule Protobuf.Protoc.Generator do
   @moduledoc false
 
-  alias Protobuf.Protoc.Generator.Message, as: MessageGenerator
-  alias Protobuf.Protoc.Generator.Enum, as: EnumGenerator
-  alias Protobuf.Protoc.Generator.Service, as: ServiceGenerator
-  alias Protobuf.Protoc.Generator.Extension, as: ExtensionGenerator
+  alias Protobuf.Protoc.Context
+  alias Protobuf.Protoc.Generator
 
-  @locals_without_parens [field: 2, field: 3, oneof: 2, rpc: 3, extend: 4, extensions: 1]
-
-  def generate(ctx, desc) do
-    name = new_file_name(desc.name)
-
-    Google.Protobuf.Compiler.CodeGeneratorResponse.File.new(
-      name: name,
-      content: generate_content(ctx, desc)
-    )
-  end
-
-  defp new_file_name(name) do
-    String.replace_suffix(name, ".proto", ".pb.ex")
-  end
-
-  def generate_content(ctx, desc) do
-    ctx = %{
+  @spec generate(Context.t(), %Google.Protobuf.FileDescriptorProto{}) ::
+          [Google.Protobuf.Compiler.CodeGeneratorResponse.File.t()]
+  def generate(%Context{} = ctx, %Google.Protobuf.FileDescriptorProto{} = desc) do
+    module_definitions =
       ctx
-      | syntax: syntax(desc.syntax),
-        package: desc.package || "",
-        dep_type_mapping: get_dep_type_mapping(ctx, desc.dependency, desc.name)
-    }
+      |> generate_module_definitions(desc)
+      |> Enum.reject(&is_nil/1)
 
-    ctx = Protobuf.Protoc.Context.cal_file_options(ctx, desc.options)
+    if ctx.one_file_per_module? do
+      Enum.map(module_definitions, fn {mod_name, content} ->
+        file_name = Macro.underscore(mod_name) <> ".pb.ex"
 
-    {enums, msgs} = MessageGenerator.generate_list(ctx, desc.message_type)
+        Google.Protobuf.Compiler.CodeGeneratorResponse.File.new(
+          name: file_name,
+          content: content
+        )
+      end)
+    else
+      # desc.name is the filename, ending in ".proto".
+      file_name = Path.rootname(desc.name) <> ".pb.ex"
 
-    list =
-      EnumGenerator.generate_list(ctx, desc.enum_type) ++
-        enums ++ msgs ++ ServiceGenerator.generate_list(ctx, desc.service)
+      content =
+        module_definitions
+        |> Enum.map(fn {_mod_name, contents} -> [contents, ?\n] end)
+        |> IO.iodata_to_binary()
+        |> Generator.Util.format()
 
-    nested_extensions =
-      ExtensionGenerator.get_nested_extensions(ctx, desc.message_type)
-      |> Enum.reverse()
-
-    list = list ++ [ExtensionGenerator.generate(ctx, desc, nested_extensions)]
-
-    list
-    |> List.flatten()
-    |> Enum.join("\n")
-    |> format_code()
+      [
+        Google.Protobuf.Compiler.CodeGeneratorResponse.File.new(
+          name: file_name,
+          content: content
+        )
+      ]
+    end
   end
 
-  @doc false
-  def get_dep_pkgs(%{pkg_mapping: mapping, package: pkg}, deps) do
-    pkgs = deps |> Enum.map(fn dep -> mapping[dep] end)
-    pkgs = if pkg && String.length(pkg) > 0, do: [pkg | pkgs], else: pkgs
-    Enum.sort(pkgs, &(byte_size(&2) <= byte_size(&1)))
+  defp generate_module_definitions(ctx, %Google.Protobuf.FileDescriptorProto{} = desc) do
+    ctx =
+      %Context{
+        ctx
+        | syntax: syntax(desc.syntax),
+          package: desc.package,
+          dep_type_mapping: get_dep_type_mapping(ctx, desc.dependency, desc.name)
+      }
+      |> Protobuf.Protoc.Context.custom_file_options_from_file_desc(desc)
+
+    nested_extensions = Generator.Extension.get_nested_extensions(ctx, desc.message_type)
+
+    enum_defmodules = Enum.map(desc.enum_type, &Generator.Enum.generate(ctx, &1))
+
+    {nested_enum_defmodules, message_defmodules} =
+      Generator.Message.generate_list(ctx, desc.message_type)
+
+    extension_defmodules = Generator.Extension.generate(ctx, desc, nested_extensions)
+
+    service_defmodules =
+      if "grpc" in ctx.plugins do
+        Enum.map(desc.service, &Generator.Service.generate(ctx, &1))
+      else
+        []
+      end
+
+    List.flatten([
+      enum_defmodules,
+      nested_enum_defmodules,
+      message_defmodules,
+      service_defmodules,
+      extension_defmodules
+    ])
   end
 
-  def get_dep_type_mapping(%{global_type_mapping: global_mapping}, deps, file_name) do
+  defp get_dep_type_mapping(%Context{global_type_mapping: global_mapping}, deps, file_name) do
     mapping =
       Enum.reduce(deps, %{}, fn dep, acc ->
         Map.merge(acc, global_mapping[dep])
@@ -66,22 +85,6 @@ defmodule Protobuf.Protoc.Generator do
   end
 
   defp syntax("proto3"), do: :proto3
-  defp syntax(_), do: :proto2
-
-  def format_code(code) do
-    formatted =
-      if Code.ensure_loaded?(Code) && function_exported?(Code, :format_string!, 2) do
-        code
-        |> Code.format_string!(locals_without_parens: @locals_without_parens)
-        |> IO.iodata_to_binary()
-      else
-        code
-      end
-
-    if formatted == "" do
-      formatted
-    else
-      formatted <> "\n"
-    end
-  end
+  defp syntax("proto2"), do: :proto2
+  defp syntax(nil), do: :proto2
 end

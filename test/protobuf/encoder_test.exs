@@ -1,6 +1,8 @@
 defmodule Protobuf.EncoderTest do
   use ExUnit.Case, async: true
 
+  import Protobuf.Wire.Types
+
   alias Protobuf.Encoder
 
   test "encodes one simple field" do
@@ -111,15 +113,15 @@ defmodule Protobuf.EncoderTest do
   end
 
   test "encodes 0 for proto2" do
-    assert Encoder.encode(TestMsg.Foo2.new(a: 0)) == <<8, 0, 17, 5, 0, 0, 0, 0, 0, 0, 0>>
+    assert Encoder.encode(TestMsg.Foo2.new(a: 0)) == <<8, 0>>
   end
 
   test "encodes [] for proto2" do
-    assert Encoder.encode(TestMsg.Foo2.new(a: 0, g: [])) == <<8, 0, 17, 5, 0, 0, 0, 0, 0, 0, 0>>
+    assert Encoder.encode(TestMsg.Foo2.new(a: 0, g: [])) == <<8, 0>>
   end
 
   test "encodes %{} for proto2" do
-    assert Encoder.encode(TestMsg.Foo2.new(a: 0, l: %{})) == <<8, 0, 17, 5, 0, 0, 0, 0, 0, 0, 0>>
+    assert Encoder.encode(TestMsg.Foo2.new(a: 0, l: %{})) == <<8, 0>>
   end
 
   test "encodes custom default message for proto2" do
@@ -159,6 +161,16 @@ defmodule Protobuf.EncoderTest do
     assert TestMsg.OneofProto3.decode(<<48, 0>>) == msg
   end
 
+  test "encodes proto3 optional fields zero values" do
+    msg = TestMsg.Proto3Optional.new(a: 0, c: :UNKNOWN)
+    assert Encoder.encode(msg) == <<8, 0, 24, 0>>
+  end
+
+  test "skips a proto3 optional field with a nil value" do
+    msg = TestMsg.Proto3Optional.new(a: nil, c: nil)
+    assert Encoder.encode(msg) == <<>>
+  end
+
   test "encodes map with oneof" do
     msg = Google.Protobuf.Struct.new(fields: %{"valid" => %{kind: {:bool_value, true}}})
     bin = Google.Protobuf.Struct.encode(msg)
@@ -169,28 +181,113 @@ defmodule Protobuf.EncoderTest do
              )
   end
 
-  test "encodes default value for proto2" do
+  test "encodes enum default value for proto2" do
     # Includes required
-    msg = TestMsg.Bar2.new(a: 0)
+    msg = TestMsg.EnumBar2.new(a: 0)
     assert Encoder.encode(msg) == <<8, 0>>
 
-    # Excludes optionals at default value
-    msg = TestMsg.Bar2.new(a: 0, b: 0)
+    # Missing required field `:a` occurs a runtime error
+    msg = TestMsg.EnumBar2.new()
+
+    assert_raise Protobuf.EncodeError, ~r/Got error when encoding TestMsg.EnumBar2/, fn ->
+      Encoder.encode(msg)
+    end
+
+    msg = TestMsg.EnumFoo2.new()
+    assert Encoder.encode(msg) == <<>>
+
+    # Explicitly set the enum default value should be encoded, should not return it as ""
+    msg = TestMsg.EnumBar2.new(a: 0)
     assert Encoder.encode(msg) == <<8, 0>>
 
-    msg = TestMsg.Bar2.new(a: 0, b: 1)
+    msg = TestMsg.EnumBar2.new(a: 1)
+    assert Encoder.encode(msg) == <<8, 1>>
+
+    msg = TestMsg.EnumBar2.new(a: 0, b: 0)
+    assert Encoder.encode(msg) == <<8, 0, 16, 0>>
+
+    msg = TestMsg.EnumBar2.new(a: 0, b: 1)
     assert Encoder.encode(msg) == <<8, 0, 16, 1>>
+
+    msg = TestMsg.EnumFoo2.new(a: 0)
+    assert Encoder.encode(msg) == <<8, 0>>
+
+    msg = TestMsg.EnumFoo2.new(a: 1)
+    assert Encoder.encode(msg) == <<8, 1>>
+
+    msg = TestMsg.EnumFoo2.new(b: 0)
+    assert Encoder.encode(msg) == <<16, 0>>
+
+    msg = TestMsg.EnumFoo2.new(a: 0, b: 1)
+    assert Encoder.encode(msg) == <<8, 0, 16, 1>>
+
+    # Proto2 enums that are not zero-based default to their first value declared.
+    msg = My.Test.Request.new(deadline: nil)
+    assert Encoder.encode(msg) == <<>>
+
+    msg = My.Test.Request.new(deadline: nil, hat: 1)
+    assert Encoder.encode(msg) == <<32, 1>>
+
+    msg = My.Test.Request.new(deadline: nil, hat: :FEDORA)
+    assert Encoder.encode(msg) == <<>>
+  end
+
+  test "encodes oneof fields' default values for proto2" do
+    msg = TestMsg.Oneof.new(first: {:e, :A})
+    assert Encoder.encode(msg) == <<48, 1>>
+    assert TestMsg.Oneof.decode(<<48, 1>>) == msg
+  end
+
+  test "encodes unknown fields" do
+    msg = %TestMsg.Foo{
+      __unknown_fields__: [
+        {4, wire_varint(), 100},
+        {100, wire_varint(), -1},
+        {1001, wire_delimited(), "foo"}
+      ],
+      a: 42,
+      d: 123.5
+    }
+
+    assert Encoder.encode(msg) ==
+             <<8, 42, 45, 0, 0, 247, 66, 32, 100, 160, 6, 255, 255, 255, 255, 255, 255, 255, 255,
+               255, 1, 202, 62, 3, 102, 111, 111>>
   end
 
   test "encodes with transformer module" do
+    msg = %TestMsg.ContainsTransformModule{field: 0}
+    assert Encoder.encode(msg) == <<10, 0>>
+    assert TestMsg.ContainsTransformModule.decode(Encoder.encode(msg)) == msg
+
     msg = %TestMsg.ContainsTransformModule{field: 42}
     assert Encoder.encode(msg) == <<10, 2, 8, 42>>
     assert TestMsg.ContainsTransformModule.decode(Encoder.encode(msg)) == msg
+  end
+
+  test "encodes with transformer module when encoding struct contains a transformer module" do
+    msg = TestMsg.ContainsIntegerStringTransformModule.new(field: "42")
+    assert msg == %TestMsg.ContainsIntegerStringTransformModule{field: "42"}
+
+    encoded = TestMsg.ContainsIntegerStringTransformModule.encode(msg)
+    assert encoded == "\b*"
+
+    assert %TestMsg.ContainsIntegerStringTransformModule{field: 42} ==
+             TestMsg.ContainsIntegerStringTransformModule.decode(encoded)
   end
 
   test "encoding skips transformer module when field is not set" do
     msg = %TestMsg.ContainsTransformModule{field: nil}
     assert Encoder.encode(msg) == <<>>
     assert TestMsg.ContainsTransformModule.decode(Encoder.encode(msg)) == msg
+  end
+
+  test "NewTransform calls new/2 before encoding" do
+    msg = TestMsg.ContainsNewTransformModule.new(field: [field: 123])
+    assert msg == %TestMsg.ContainsNewTransformModule{field: [field: 123]}
+
+    assert TestMsg.ContainsNewTransformModule.decode(Encoder.encode(msg)) ==
+             %TestMsg.ContainsNewTransformModule{
+               field: %TestMsg.WithNewTransformModule{field: 123}
+             }
   end
 end

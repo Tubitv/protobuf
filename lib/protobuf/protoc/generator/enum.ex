@@ -1,37 +1,45 @@
 defmodule Protobuf.Protoc.Generator.Enum do
   @moduledoc false
+
+  alias Protobuf.Protoc.Context
   alias Protobuf.Protoc.Generator.Util
 
-  def generate_list(ctx, descs) do
-    Enum.map(descs, fn desc -> generate(ctx, desc) end)
-  end
+  require EEx
 
-  def generate(%{namespace: ns} = ctx, desc) do
-    name = Util.trans_name(desc.name)
-    fields = Enum.map(desc.value, fn f -> generate_field(f) end)
-    msg_name = Util.mod_name(ctx, ns ++ [name])
-    generate_desc = if ctx.gen_descriptors?, do: desc, else: nil
-    type = generate_type(desc.value)
+  EEx.function_from_file(
+    :defp,
+    :enum_template,
+    Path.expand("./templates/enum.ex.eex", :code.priv_dir(:protobuf)),
+    [:assigns]
+  )
 
-    Protobuf.Protoc.Template.enum(msg_name, msg_opts(ctx, desc), fields, type, generate_desc)
-  end
+  @spec generate(Context.t(), Google.Protobuf.EnumDescriptorProto.t()) ::
+          {module_name :: String.t(), file_contents :: String.t()}
+  def generate(%Context{namespace: ns} = ctx, %Google.Protobuf.EnumDescriptorProto{} = desc) do
+    msg_name = Util.mod_name(ctx, ns ++ [Macro.camelize(desc.name)])
 
-  def generate_type(fields) do
-    field_values =
-      fields
-      |> Enum.map(fn f -> ":#{f.name}" end)
-      |> Enum.join(" | ")
+    use_options =
+      Util.options_to_str(%{
+        syntax: ctx.syntax,
+        enum: true,
+        protoc_gen_elixir_version: "\"#{Util.version()}\""
+      })
 
-    "@type t :: integer | " <> field_values
-  end
+    descriptor_fun_body =
+      if ctx.gen_descriptors? do
+        Util.descriptor_fun_body(desc)
+      else
+        nil
+      end
 
-  def generate_field(f) do
-    ":#{f.name}, #{f.number}"
-  end
+    content =
+      enum_template(
+        module: msg_name,
+        use_options: use_options,
+        fields: desc.value,
+        descriptor_fun_body: descriptor_fun_body
+      )
 
-  defp msg_opts(%{syntax: syntax}, _desc) do
-    opts = %{syntax: syntax, enum: true}
-    str = Util.options_to_str(opts)
-    ", " <> str
+    {msg_name, Util.format(content)}
   end
 end

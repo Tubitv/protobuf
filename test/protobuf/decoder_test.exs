@@ -1,6 +1,8 @@
 defmodule Protobuf.DecoderTest do
   use ExUnit.Case, async: true
 
+  import Protobuf.Wire.Types
+
   alias Protobuf.Decoder
 
   test "decodes one simple field" do
@@ -21,20 +23,24 @@ defmodule Protobuf.DecoderTest do
   end
 
   test "raises for wrong wire type" do
-    assert_raise(Protobuf.DecodeError, ~r{wrong wire_type for a: got 1, want 0}, fn ->
+    assert_raise(Protobuf.DecodeError, ~r{wrong wire_type for field a: got 1, expected 0}, fn ->
       Decoder.decode(<<9, 42, 0, 0, 0, 0, 0, 0, 0>>, TestMsg.Foo)
     end)
   end
 
   test "raises for bad binaries" do
-    assert_raise(Protobuf.DecodeError, ~r{cannot decode binary data}, fn ->
+    assert_raise(Protobuf.DecodeError, ~r{invalid field number 0 when decoding binary data}, fn ->
       Decoder.decode(<<0, 0, 0, 0, 0, 0, 0>>, TestMsg.Foo)
     end)
   end
 
-  test "skips unknown varint fields" do
-    struct = Decoder.decode(<<8, 42, 32, 100, 45, 0, 0, 247, 66>>, TestMsg.Foo)
-    assert struct == TestMsg.Foo.new(a: 42, d: 123.5)
+  test "raises for length-delimited string with wrong length" do
+    # correct length is <<8, 1, 18, 2, 48, 48>>
+    bin = <<8, 1, 18, 3, 48, 48>>
+
+    assert_raise(Protobuf.DecodeError, ~r{insufficient data decoding field b}, fn ->
+      Decoder.decode(bin, TestMsg.Foo.Bar)
+    end)
   end
 
   test "skips unknown string fields" do
@@ -57,6 +63,24 @@ defmodule Protobuf.DecoderTest do
   test "decodes repeated varint fields" do
     struct = Decoder.decode(<<64, 12, 8, 123, 64, 13, 64, 14>>, TestMsg.Foo)
     assert struct == TestMsg.Foo.new(a: 123, g: [12, 13, 14])
+  end
+
+  test "decodes unknown fields" do
+    struct =
+      Decoder.decode(
+        <<8, 42, 45, 0, 0, 247, 66, 32, 100, 160, 6, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+          1, 202, 62, 3, 102, 111, 111>>,
+        TestMsg.Foo
+      )
+
+    assert struct.a == 42
+    assert struct.d == 123.5
+
+    assert Protobuf.get_unknown_fields(struct) == [
+             {4, wire_varint(), 100},
+             {100, wire_varint(), 18_446_744_073_709_551_615},
+             {1001, wire_delimited(), "foo"}
+           ]
   end
 
   test "decodes repeated embedded fields" do
@@ -83,13 +107,15 @@ defmodule Protobuf.DecoderTest do
 
     struct = Decoder.decode(<<88, 2>>, TestMsg.Foo)
     assert struct == TestMsg.Foo.new(j: :B)
+
+    # Proto2 enums that are not zero-based default to their first value declared.
+    struct = Decoder.decode(<<>>, My.Test.Request)
+    assert struct.hat == :FEDORA
   end
 
   test "decodes unknown enum value" do
-    assert ExUnit.CaptureLog.capture_log(fn ->
-             struct = Decoder.decode(<<88, 3>>, TestMsg.Foo)
-             assert struct == TestMsg.Foo.new(j: 3)
-           end) =~ ~r/unknown enum value 3 when decoding for TestMsg\.EnumFoo/
+    struct = Decoder.decode(<<88, 3>>, TestMsg.Foo)
+    assert struct == TestMsg.Foo.new(j: 3)
   end
 
   test "decodes map type" do
@@ -115,6 +141,16 @@ defmodule Protobuf.DecoderTest do
   test "decodes %{} for proto2" do
     assert Decoder.decode(<<8, 0, 17, 5, 0, 0, 0, 0, 0, 0, 0>>, TestMsg.Foo2) ==
              TestMsg.Foo2.new(a: 0, l: %{})
+  end
+
+  test "decodes nil for proto3" do
+    assert Decoder.decode(<<18, 1, 65>>, TestMsg.Proto3Optional) ==
+             TestMsg.Proto3Optional.new(a: nil, b: "A", c: nil)
+  end
+
+  test "decodes default values for proto3 optional" do
+    assert Decoder.decode(<<8, 0, 18, 1, 65, 24, 0>>, TestMsg.Proto3Optional) ==
+             TestMsg.Proto3Optional.new(a: 0, b: "A", c: :UNKNOWN)
   end
 
   test "decodes unpacked binary with SignedInt32Repeated for proto2" do
@@ -170,8 +206,19 @@ defmodule Protobuf.DecoderTest do
     assert TestMsg.ContainsTransformModule.decode(<<10, 2, 8, 42>>) ==
              %TestMsg.ContainsTransformModule{field: 42}
 
+    assert TestMsg.ContainsTransformModule.decode(<<10, 0>>) ==
+             %TestMsg.ContainsTransformModule{field: 0}
+
     assert TestMsg.ContainsTransformModule.decode(<<>>) ==
              %TestMsg.ContainsTransformModule{field: nil}
+  end
+
+  test "raises an error on unknown wire types" do
+    payload = Protobuf.Encoder.encode_fnum(_fnum = 1, _wire_type = 6)
+
+    assert_raise Protobuf.DecodeError, "cannot decode binary data, unknown wire type: 6", fn ->
+      Decoder.decode(payload, TestMsg.Oneof)
+    end
   end
 
   describe "groups" do
@@ -234,6 +281,19 @@ defmodule Protobuf.DecoderTest do
       assert_raise Protobuf.DecodeError, "cannot decode binary data", fn ->
         Decoder.decode(<<19>>, TestMsg.Foo)
       end
+    end
+
+    test "raises when group contains unknown wire type" do
+      # field number 2, wire type 3
+      group_start = <<19>>
+      # field number 1, wire type 7, value 42
+      field = <<15, 42>>
+
+      bin = group_start <> field
+
+      assert_raise Protobuf.DecodeError,
+                   "invalid wire_type for skipped field a: got 7, expected 0",
+                   fn -> Decoder.decode(bin, TestMsg.Foo) end
     end
   end
 end

@@ -1,65 +1,91 @@
 defmodule Protobuf.Protoc.Generator.Util do
   @moduledoc false
-  def trans_name(name) do
-    Macro.camelize(name)
+
+  alias Protobuf.Protoc.Context
+
+  @locals_without_parens [field: 2, field: 3, oneof: 2, rpc: 3, extend: 4, extensions: 1]
+
+  defguardp is_nil_or_nonempty_string(term) when is_nil(term) or (is_binary(term) and term != "")
+
+  @spec mod_name(Context.t(), [String.t()]) :: String.t()
+  def mod_name(%Context{} = ctx, ns) when is_list(ns) do
+    ns = Enum.map(ns, &proto_name_to_module_name/1)
+
+    parts =
+      case camelcase_prefix(ctx) do
+        "" -> ns
+        prefix -> [prefix | ns]
+      end
+
+    Enum.join(parts, ".")
   end
 
-  def join_name(list) do
-    Enum.join(list, ".")
+  defp camelcase_prefix(%{package_prefix: nil, module_prefix: nil, package: nil} = _ctx),
+    do: ""
+
+  defp camelcase_prefix(%{package_prefix: prefix, module_prefix: nil, package: package} = _ctx),
+    do: proto_name_to_module_name(prepend_package_prefix(prefix, package))
+
+  defp camelcase_prefix(%{module_prefix: module_prefix} = _ctx),
+    do: proto_name_to_module_name(module_prefix)
+
+  defp proto_name_to_module_name(name) when is_binary(name) do
+    name
+    |> String.split(".")
+    |> Enum.map_join(".", &Macro.camelize/1)
   end
 
-  def mod_name(ctx, ns) when is_list(ns) do
-    prefix = prefixed_name(ctx)
-    ns |> join_name() |> attach_pkg(prefix)
+  @spec prepend_package_prefix(String.t() | nil, String.t() | nil) :: String.t()
+  def prepend_package_prefix(prefix, package)
+      when is_nil_or_nonempty_string(prefix) and is_nil_or_nonempty_string(package) do
+    [prefix, package]
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join(".")
   end
 
-  def mod_name(ctx, ns) do
-    prefix = prefixed_name(ctx)
-    attach_pkg(ns, prefix)
-  end
-
-  def prefixed_name(%{package_prefix: nil, module_prefix: nil, package: pkg} = _ctx),
-    do: pkg
-
-  def prefixed_name(%{package_prefix: prefix, module_prefix: nil, package: pkg} = _ctx),
-    do: attach_raw_pkg(pkg, prefix)
-
-  def prefixed_name(%{module_prefix: module_prefix} = _ctx),
-    do: module_prefix
-
-  defp attach_pkg(name, ""), do: name
-  defp attach_pkg(name, nil), do: name
-  defp attach_pkg(name, pkg), do: normalize_type_name(pkg) <> "." <> name
-
-  def attach_raw_pkg(name, ""), do: name
-  def attach_raw_pkg(name, nil), do: name
-  def attach_raw_pkg("", pkg), do: pkg
-  def attach_raw_pkg(nil, pkg), do: pkg
-  def attach_raw_pkg(name, pkg), do: pkg <> "." <> name
-
-  def options_to_str(opts) do
+  @spec options_to_str(%{optional(atom()) => atom() | integer() | String.t()}) :: String.t()
+  def options_to_str(opts) when is_map(opts) do
     opts
-    |> Enum.filter(fn {_, v} -> v end)
-    |> Enum.map(fn {k, v} -> "#{k}: #{print(v)}" end)
-    |> Enum.join(", ")
+    |> Enum.reject(fn {_key, val} -> val in [nil, false] end)
+    |> Enum.map_join(", ", fn {key, val} -> "#{key}: #{print(val)}" end)
   end
 
-  def type_from_type_name(ctx, type_name) do
+  defp print(atom) when is_atom(atom), do: inspect(atom)
+  defp print(val), do: val
+
+  @spec type_from_type_name(Context.t(), String.t()) :: String.t()
+  def type_from_type_name(%Context{dep_type_mapping: mapping}, type_name)
+      when is_binary(type_name) do
     # The doc says there's a situation where type_name begins without a `.`, but I never got that.
     # Handle that later.
     metadata =
-      ctx.dep_type_mapping[type_name] ||
+      mapping[type_name] ||
         raise "There's something wrong to get #{type_name}'s type, please contact with the lib author."
 
     metadata[:type_name]
   end
 
-  def normalize_type_name(name) do
-    name
-    |> String.split(".")
-    |> Enum.map_join(".", &trans_name/1)
+  @spec descriptor_fun_body(desc :: struct()) :: String.t()
+  def descriptor_fun_body(%mod{} = desc) do
+    desc
+    |> Map.from_struct()
+    |> Enum.filter(fn {_key, val} -> not is_nil(val) end)
+    |> mod.new()
+    |> mod.encode()
+    |> mod.decode()
+    |> inspect(limit: :infinity)
   end
 
-  def print(v) when is_atom(v), do: inspect(v)
-  def print(v), do: v
+  @spec format(String.t()) :: String.t()
+  def format(code) when is_binary(code) do
+    code
+    |> Code.format_string!(locals_without_parens: @locals_without_parens)
+    |> IO.iodata_to_binary()
+  end
+
+  @spec version() :: String.t()
+  def version do
+    {:ok, value} = :application.get_key(:protobuf, :vsn)
+    List.to_string(value)
+  end
 end

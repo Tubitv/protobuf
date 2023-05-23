@@ -1,41 +1,6 @@
 defmodule Benchmarks.GoogleMessage3.GoogleMessage3 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37519: Benchmarks.GoogleMessage3.Message37487.t() | nil,
-          field37520: Benchmarks.GoogleMessage3.Message36876.t() | nil,
-          field37521: Benchmarks.GoogleMessage3.Message13062.t() | nil,
-          field37522: Benchmarks.GoogleMessage3.Message952.t() | nil,
-          field37523: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37524: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37525: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37526: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37527: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37528: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37529: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37530: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37531: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37532: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field37533: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [
-    :field37519,
-    :field37520,
-    :field37521,
-    :field37522,
-    :field37523,
-    :field37524,
-    :field37525,
-    :field37526,
-    :field37527,
-    :field37528,
-    :field37529,
-    :field37530,
-    :field37531,
-    :field37532,
-    :field37533
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37519, 2, optional: true, type: Benchmarks.GoogleMessage3.Message37487
   field :field37520, 3, optional: true, type: Benchmarks.GoogleMessage3.Message36876
@@ -56,15 +21,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message1327 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field1369: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field1370: [Benchmarks.GoogleMessage3.Message1328.t()],
-          field1371: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field1372: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()]
-        }
-  defstruct [:field1369, :field1370, :field1371, :field1372]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field1369, 1, repeated: true, type: Benchmarks.GoogleMessage3.UnusedEmptyMessage
   field :field1370, 3, repeated: true, type: Benchmarks.GoogleMessage3.Message1328
@@ -74,13 +31,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message3672.Message3673 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field3738: Benchmarks.GoogleMessage3.Enum3476.t(),
-          field3739: integer
-        }
-  defstruct [:field3738, :field3739]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field3738, 4, required: true, type: Benchmarks.GoogleMessage3.Enum3476, enum: true
   field :field3739, 5, required: true, type: :int32
@@ -88,13 +39,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message3672.Message3674 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field3740: Benchmarks.GoogleMessage3.Enum3476.t(),
-          field3741: integer
-        }
-  defstruct [:field3740, :field3741]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field3740, 7, required: true, type: Benchmarks.GoogleMessage3.Enum3476, enum: true
   field :field3741, 8, required: true, type: :int32
@@ -102,32 +47,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message3672 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field3727: Benchmarks.GoogleMessage3.Enum3476.t(),
-          field3728: integer,
-          field3729: integer,
-          message3673: [any],
-          message3674: [any],
-          field3732: boolean,
-          field3733: integer,
-          field3734: Benchmarks.GoogleMessage3.Enum3476.t(),
-          field3735: integer,
-          field3736: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [
-    :field3727,
-    :field3728,
-    :field3729,
-    :message3673,
-    :message3674,
-    :field3732,
-    :field3733,
-    :field3734,
-    :field3735,
-    :field3736
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field3727, 1, optional: true, type: Benchmarks.GoogleMessage3.Enum3476, enum: true
   field :field3728, 11, optional: true, type: :int32
@@ -143,18 +63,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message3804 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field3818: integer,
-          field3819: boolean,
-          field3820: [[Benchmarks.GoogleMessage3.Enum3805.t()]],
-          field3821: integer,
-          field3822: boolean,
-          field3823: integer,
-          field3824: Benchmarks.GoogleMessage3.Enum3783.t()
-        }
-  defstruct [:field3818, :field3819, :field3820, :field3821, :field3822, :field3823, :field3824]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field3818, 1, required: true, type: :int64
   field :field3819, 2, required: true, type: :bool
@@ -167,138 +76,28 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message6849 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field6910: [Benchmarks.GoogleMessage3.Message6850.t()]
-        }
-  defstruct [:field6910]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field6910, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message6850
 end
 
 defmodule Benchmarks.GoogleMessage3.Message6866 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field6973: [Benchmarks.GoogleMessage3.Message6863.t()]
-        }
-  defstruct [:field6973]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field6973, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message6863
 end
 
 defmodule Benchmarks.GoogleMessage3.Message6870 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field6991: [Benchmarks.GoogleMessage3.Message6871.t()]
-        }
-  defstruct [:field6991]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field6991, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message6871
 end
 
 defmodule Benchmarks.GoogleMessage3.Message7651 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field7685: String.t(),
-          field7686: integer,
-          field7687: integer,
-          field7688: integer,
-          field7689: integer,
-          field7690: integer,
-          field7691: integer,
-          field7692: integer,
-          field7693: integer,
-          field7694: integer,
-          field7695: integer,
-          field7696: integer,
-          field7697: integer,
-          field7698: integer,
-          field7699: integer,
-          field7700: integer,
-          field7701: integer,
-          field7702: integer,
-          field7703: boolean,
-          field7704: [integer],
-          field7705: [integer],
-          field7706: [String.t()],
-          field7707: [String.t()],
-          field7708: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field7709: integer,
-          field7710: integer,
-          field7711: integer,
-          field7712: integer,
-          field7713: integer,
-          field7714: integer,
-          field7715: [Benchmarks.GoogleMessage3.Message7547.t()],
-          field7716: [Benchmarks.GoogleMessage3.Message7547.t()],
-          field7717: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field7718: [String.t()],
-          field7719: [String.t()],
-          field7720: [Benchmarks.GoogleMessage3.Message7648.t()],
-          field7721: boolean,
-          field7722: boolean,
-          field7723: boolean,
-          field7724: boolean,
-          field7725: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field7726: Benchmarks.GoogleMessage3.UnusedEnum.t(),
-          field7727: Benchmarks.GoogleMessage3.Enum7654.t(),
-          field7728: String.t(),
-          field7729: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [
-    :field7685,
-    :field7686,
-    :field7687,
-    :field7688,
-    :field7689,
-    :field7690,
-    :field7691,
-    :field7692,
-    :field7693,
-    :field7694,
-    :field7695,
-    :field7696,
-    :field7697,
-    :field7698,
-    :field7699,
-    :field7700,
-    :field7701,
-    :field7702,
-    :field7703,
-    :field7704,
-    :field7705,
-    :field7706,
-    :field7707,
-    :field7708,
-    :field7709,
-    :field7710,
-    :field7711,
-    :field7712,
-    :field7713,
-    :field7714,
-    :field7715,
-    :field7716,
-    :field7717,
-    :field7718,
-    :field7719,
-    :field7720,
-    :field7721,
-    :field7722,
-    :field7723,
-    :field7724,
-    :field7725,
-    :field7726,
-    :field7727,
-    :field7728,
-    :field7729
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field7685, 1, optional: true, type: :string
   field :field7686, 2, optional: true, type: :int64
@@ -349,17 +148,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message7864 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field7866: String.t(),
-          field7867: String.t(),
-          field7868: [Benchmarks.GoogleMessage3.Message7865.t()],
-          field7869: [Benchmarks.GoogleMessage3.Message7865.t()],
-          field7870: [Benchmarks.GoogleMessage3.Message7865.t()],
-          field7871: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()]
-        }
-  defstruct [:field7866, :field7867, :field7868, :field7869, :field7870, :field7871]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field7866, 1, optional: true, type: :string
   field :field7867, 2, optional: true, type: :string
@@ -371,52 +160,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message7929 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field7942: integer,
-          field7943: integer,
-          field7944: integer,
-          field7945: integer,
-          field7946: integer,
-          field7947: integer,
-          field7948: integer,
-          field7949: integer,
-          field7950: [Benchmarks.GoogleMessage3.Message7919.t()],
-          field7951: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field7952: [Benchmarks.GoogleMessage3.Message7920.t()],
-          field7953: [Benchmarks.GoogleMessage3.Message7921.t()],
-          field7954: [Benchmarks.GoogleMessage3.Message7928.t()],
-          field7955: integer,
-          field7956: boolean,
-          field7957: integer,
-          field7958: integer,
-          field7959: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field7960: [binary],
-          field7961: integer
-        }
-  defstruct [
-    :field7942,
-    :field7943,
-    :field7944,
-    :field7945,
-    :field7946,
-    :field7947,
-    :field7948,
-    :field7949,
-    :field7950,
-    :field7951,
-    :field7952,
-    :field7953,
-    :field7954,
-    :field7955,
-    :field7956,
-    :field7957,
-    :field7958,
-    :field7959,
-    :field7960,
-    :field7961
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field7942, 1, optional: true, type: :int64
   field :field7943, 4, optional: true, type: :int64
@@ -442,46 +186,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message8508 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field8517: [Benchmarks.GoogleMessage3.Message8511.t()],
-          field8518: [Benchmarks.GoogleMessage3.Message8512.t()],
-          field8519: [Benchmarks.GoogleMessage3.Message8513.t()],
-          field8520: boolean,
-          field8521: Benchmarks.GoogleMessage3.Message8514.t() | nil,
-          field8522: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field8523: [Benchmarks.GoogleMessage3.Message8515.t()],
-          field8524: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field8525: integer,
-          field8526: float | :infinity | :negative_infinity | :nan,
-          field8527: integer,
-          field8528: integer,
-          field8529: integer,
-          field8530: binary,
-          field8531: [binary],
-          field8532: boolean,
-          field8533: binary
-        }
-  defstruct [
-    :field8517,
-    :field8518,
-    :field8519,
-    :field8520,
-    :field8521,
-    :field8522,
-    :field8523,
-    :field8524,
-    :field8525,
-    :field8526,
-    :field8527,
-    :field8528,
-    :field8529,
-    :field8530,
-    :field8531,
-    :field8532,
-    :field8533
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field8517, 8, repeated: true, type: Benchmarks.GoogleMessage3.Message8511
   field :field8518, 9, repeated: true, type: Benchmarks.GoogleMessage3.Message8512
@@ -504,13 +209,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message9122 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field9132: float | :infinity | :negative_infinity | :nan,
-          field9133: float | :infinity | :negative_infinity | :nan
-        }
-  defstruct [:field9132, :field9133]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field9132, 1, optional: true, type: :float
   field :field9133, 2, optional: true, type: :float
@@ -518,53 +217,30 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message10177 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field10270: [Benchmarks.GoogleMessage3.Message10155.t()]
-        }
-  defstruct [:field10270]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field10270, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message10155
 end
 
 defmodule Benchmarks.GoogleMessage3.Message10278 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
-  @type t :: %__MODULE__{
-          field10286: [integer],
-          field10287: [integer],
-          field10288: integer
-        }
-  defstruct [:field10286, :field10287, :field10288]
-
-  field :field10286, 1, repeated: true, type: :int32, packed: true
-  field :field10287, 2, repeated: true, type: :int32, packed: true
+  field :field10286, 1, repeated: true, type: :int32, packed: true, deprecated: false
+  field :field10287, 2, repeated: true, type: :int32, packed: true, deprecated: false
   field :field10288, 3, optional: true, type: :int32
 end
 
 defmodule Benchmarks.GoogleMessage3.Message10323 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field10360: [Benchmarks.GoogleMessage3.Message10320.t()]
-        }
-  defstruct [:field10360]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field10360, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message10320
 end
 
 defmodule Benchmarks.GoogleMessage3.Message10324 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field10362: [Benchmarks.GoogleMessage3.Message10322.t()],
-          field10363: Benchmarks.GoogleMessage3.Message10321.t() | nil
-        }
-  defstruct [:field10362, :field10363]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field10362, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message10322
   field :field10363, 2, optional: true, type: Benchmarks.GoogleMessage3.Message10321
@@ -572,26 +248,14 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message11990 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12030: [Benchmarks.GoogleMessage3.Message11988.t()]
-        }
-  defstruct [:field12030]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12030, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message11988
 end
 
 defmodule Benchmarks.GoogleMessage3.Message12691 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12713: String.t(),
-          field12714: integer,
-          field12715: Benchmarks.GoogleMessage3.Message12668.t() | nil
-        }
-  defstruct [:field12713, :field12714, :field12715]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12713, 1, optional: true, type: :string
   field :field12714, 2, optional: true, type: :int32
@@ -600,52 +264,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message12870 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12879: integer,
-          field12880: integer,
-          field12881: integer,
-          field12882: non_neg_integer,
-          field12883: String.t(),
-          field12884: non_neg_integer,
-          field12885: [non_neg_integer],
-          field12886: integer,
-          field12887: integer,
-          field12888: [Benchmarks.GoogleMessage3.Message12870.t()],
-          field12889: integer,
-          field12890: non_neg_integer,
-          field12891: integer,
-          field12892: integer,
-          field12893: float | :infinity | :negative_infinity | :nan,
-          field12894: Benchmarks.GoogleMessage3.Message12825.t() | nil,
-          field12895: float | :infinity | :negative_infinity | :nan,
-          field12896: String.t(),
-          field12897: Benchmarks.GoogleMessage3.Enum12871.t(),
-          field12898: integer
-        }
-  defstruct [
-    :field12879,
-    :field12880,
-    :field12881,
-    :field12882,
-    :field12883,
-    :field12884,
-    :field12885,
-    :field12886,
-    :field12887,
-    :field12888,
-    :field12889,
-    :field12890,
-    :field12891,
-    :field12892,
-    :field12893,
-    :field12894,
-    :field12895,
-    :field12896,
-    :field12897,
-    :field12898
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12879, 1, required: true, type: :int32
   field :field12880, 7, optional: true, type: :int32
@@ -671,13 +290,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message13154 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field13164: float | :infinity | :negative_infinity | :nan,
-          field13165: float | :infinity | :negative_infinity | :nan
-        }
-  defstruct [:field13164, :field13165]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field13164, 1, required: true, type: :float
   field :field13165, 2, required: true, type: :float
@@ -685,78 +298,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message16507 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field16510: boolean,
-          field16511: boolean,
-          field16512: boolean,
-          field16513: [String.t()],
-          field16514: [String.t()],
-          field16515: String.t(),
-          field16516: [integer],
-          field16517: [integer],
-          field16518: integer,
-          field16519: String.t(),
-          field16520: [String.t()],
-          field16521: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field16522: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field16523: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field16524: String.t(),
-          field16525: integer,
-          field16526: integer,
-          field16527: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field16528: boolean,
-          field16529: [String.t()],
-          field16530: float | :infinity | :negative_infinity | :nan,
-          field16531: Benchmarks.GoogleMessage3.Message16478.t() | nil,
-          field16532: boolean,
-          field16533: String.t(),
-          field16534: boolean,
-          field16535: boolean,
-          field16536: boolean,
-          field16537: boolean,
-          field16538: boolean,
-          field16539: boolean,
-          field16540: boolean,
-          field16541: [String.t()],
-          __pb_extensions__: map
-        }
-  defstruct [
-    :field16510,
-    :field16511,
-    :field16512,
-    :field16513,
-    :field16514,
-    :field16515,
-    :field16516,
-    :field16517,
-    :field16518,
-    :field16519,
-    :field16520,
-    :field16521,
-    :field16522,
-    :field16523,
-    :field16524,
-    :field16525,
-    :field16526,
-    :field16527,
-    :field16528,
-    :field16529,
-    :field16530,
-    :field16531,
-    :field16532,
-    :field16533,
-    :field16534,
-    :field16535,
-    :field16536,
-    :field16537,
-    :field16538,
-    :field16539,
-    :field16540,
-    :field16541,
-    :__pb_extensions__
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field16510, 3, optional: true, type: :bool
   field :field16511, 4, optional: true, type: :bool
@@ -796,25 +338,14 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message16564 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field16568: [Benchmarks.GoogleMessage3.Message16552.t()]
-        }
-  defstruct [:field16568]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field16568, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message16552
 end
 
 defmodule Benchmarks.GoogleMessage3.Message16661 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field16671: [Benchmarks.GoogleMessage3.Message16660.t()],
-          field16672: [non_neg_integer]
-        }
-  defstruct [:field16671, :field16672]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field16671, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message16660
   field :field16672, 2, repeated: true, type: :uint64
@@ -822,15 +353,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message16746 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field16806: [Benchmarks.GoogleMessage3.Message16727.t()],
-          field16807: boolean,
-          field16808: boolean,
-          field16809: [Benchmarks.GoogleMessage3.Message16725.t()]
-        }
-  defstruct [:field16806, :field16807, :field16808, :field16809]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field16806, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message16727
   field :field16807, 2, optional: true, type: :bool
@@ -840,64 +363,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message17786.Message17787 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field18177: integer,
-          field18178: integer,
-          field18179: Benchmarks.GoogleMessage3.Message17783.t() | nil,
-          field18180: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18181: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18182: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field18183: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18184: Benchmarks.GoogleMessage3.Message17726.t() | nil,
-          field18185: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18186: Benchmarks.GoogleMessage3.Message16945.t() | nil,
-          field18187: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18188: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18189: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18190: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18191: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18192: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18193: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18194: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18195: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18196: Benchmarks.GoogleMessage3.Enum16925.t(),
-          field18197: boolean,
-          field18198: [[Benchmarks.GoogleMessage3.UnusedEnum.t()]],
-          field18199: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field18200: String.t(),
-          field18201: String.t(),
-          field18202: boolean
-        }
-  defstruct [
-    :field18177,
-    :field18178,
-    :field18179,
-    :field18180,
-    :field18181,
-    :field18182,
-    :field18183,
-    :field18184,
-    :field18185,
-    :field18186,
-    :field18187,
-    :field18188,
-    :field18189,
-    :field18190,
-    :field18191,
-    :field18192,
-    :field18193,
-    :field18194,
-    :field18195,
-    :field18196,
-    :field18197,
-    :field18198,
-    :field18199,
-    :field18200,
-    :field18201,
-    :field18202
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field18177, 2, required: true, type: :int32
   field :field18178, 3, required: true, type: :int32
@@ -929,13 +395,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message17786 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          message17787: [any],
-          field18175: [Benchmarks.GoogleMessage3.Message17782.t()]
-        }
-  defstruct [:message17787, :field18175]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :message17787, 1, repeated: true, type: :group
   field :field18175, 20, repeated: true, type: Benchmarks.GoogleMessage3.Message17782
@@ -943,86 +403,14 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message22857 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field22874: [Benchmarks.GoogleMessage3.Message22853.t()]
-        }
-  defstruct [:field22874]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field22874, 1, repeated: true, type: Benchmarks.GoogleMessage3.Message22853
 end
 
 defmodule Benchmarks.GoogleMessage3.Message24404.Message24405 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field24686: integer,
-          field24687: integer,
-          field24688: Benchmarks.GoogleMessage3.Message24317.t() | nil,
-          field24689: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24690: Benchmarks.GoogleMessage3.Message24376.t() | nil,
-          field24691: Benchmarks.GoogleMessage3.Message24345.t() | nil,
-          field24692: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24693: Benchmarks.GoogleMessage3.Message24379.t() | nil,
-          field24694: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24695: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24696: Benchmarks.GoogleMessage3.Message24391.t() | nil,
-          field24697: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24698: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24699: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24700: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24701: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24702: Benchmarks.GoogleMessage3.Enum16925.t(),
-          field24703: float | :infinity | :negative_infinity | :nan,
-          field24704: boolean,
-          field24705: [[Benchmarks.GoogleMessage3.Enum16891.t()]],
-          field24706: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field24707: String.t(),
-          field24708: String.t(),
-          field24709: float | :infinity | :negative_infinity | :nan,
-          field24710: boolean,
-          field24711: Benchmarks.GoogleMessage3.UnusedEnum.t(),
-          field24712: boolean,
-          field24713: Benchmarks.GoogleMessage3.UnusedEnum.t(),
-          field24714: boolean,
-          field24715: boolean,
-          field24716: integer
-        }
-  defstruct [
-    :field24686,
-    :field24687,
-    :field24688,
-    :field24689,
-    :field24690,
-    :field24691,
-    :field24692,
-    :field24693,
-    :field24694,
-    :field24695,
-    :field24696,
-    :field24697,
-    :field24698,
-    :field24699,
-    :field24700,
-    :field24701,
-    :field24702,
-    :field24703,
-    :field24704,
-    :field24705,
-    :field24706,
-    :field24707,
-    :field24708,
-    :field24709,
-    :field24710,
-    :field24711,
-    :field24712,
-    :field24713,
-    :field24714,
-    :field24715,
-    :field24716
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field24686, 2, required: true, type: :int32
   field :field24687, 3, required: true, type: :int32
@@ -1059,13 +447,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message24404 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          message24405: [any],
-          field24684: Benchmarks.GoogleMessage3.Message24403.t() | nil
-        }
-  defstruct [:message24405, :field24684]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :message24405, 1, repeated: true, type: :group
   field :field24684, 30, optional: true, type: Benchmarks.GoogleMessage3.Message24403
@@ -1073,13 +455,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message27300 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field27302: [Benchmarks.GoogleMessage3.UnusedEmptyMessage.t()],
-          field27303: String.t()
-        }
-  defstruct [:field27302, :field27303]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field27302, 1, repeated: true, type: Benchmarks.GoogleMessage3.UnusedEmptyMessage
   field :field27303, 2, optional: true, type: :string
@@ -1087,58 +463,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message27453 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field27459: String.t(),
-          field27460: [String.t()],
-          field27461: [float | :infinity | :negative_infinity | :nan],
-          field27462: [integer],
-          field27463: [integer],
-          field27464: [Benchmarks.GoogleMessage3.Message27454.t()],
-          field27465: [String.t()],
-          field27466: [float | :infinity | :negative_infinity | :nan],
-          field27467: [String.t()],
-          field27468: [String.t()],
-          field27469: String.t(),
-          field27470: [Benchmarks.GoogleMessage3.Message27357.t()],
-          field27471: Benchmarks.GoogleMessage3.Message27360.t() | nil,
-          field27472: String.t(),
-          field27473: String.t(),
-          field27474: boolean,
-          field27475: boolean,
-          field27476: boolean,
-          field27477: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil,
-          field27478: boolean,
-          field27479: boolean,
-          field27480: String.t(),
-          field27481: Benchmarks.GoogleMessage3.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [
-    :field27459,
-    :field27460,
-    :field27461,
-    :field27462,
-    :field27463,
-    :field27464,
-    :field27465,
-    :field27466,
-    :field27467,
-    :field27468,
-    :field27469,
-    :field27470,
-    :field27471,
-    :field27472,
-    :field27473,
-    :field27474,
-    :field27475,
-    :field27476,
-    :field27477,
-    :field27478,
-    :field27479,
-    :field27480,
-    :field27481
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field27459, 15, optional: true, type: :string
   field :field27460, 1, repeated: true, type: :string
@@ -1167,9 +492,10 @@ end
 
 defmodule Benchmarks.GoogleMessage3.PbExtension do
   @moduledoc false
-  use Protobuf, syntax: :proto2
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17026, 472, optional: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17027, 818, repeated: true, type: :string
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17031, 215,
@@ -1193,8 +519,11 @@ defmodule Benchmarks.GoogleMessage3.PbExtension do
     type: Benchmarks.GoogleMessage3.Message0
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17043, 224, optional: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17044, 225, optional: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17048, 63, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17049, 64, repeated: true, type: :string
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17052, 233,
@@ -1206,6 +535,7 @@ defmodule Benchmarks.GoogleMessage3.PbExtension do
     type: Benchmarks.GoogleMessage3.Message0
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17056, 275, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17057, 226, optional: true, type: :string
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17060, 27,
@@ -1237,11 +567,17 @@ defmodule Benchmarks.GoogleMessage3.PbExtension do
     type: Benchmarks.GoogleMessage3.Message0
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17102, 158, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17107, 166, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17133, 567, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17134, 572, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17160, 49, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17168, 32, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17170, 34, repeated: true, type: :string
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17172, 509,
@@ -1299,6 +635,7 @@ defmodule Benchmarks.GoogleMessage3.PbExtension do
     type: Benchmarks.GoogleMessage3.Message0
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17460, 560, repeated: true, type: :string
+
   extend Benchmarks.GoogleMessage3.Message16945, :field17466, 552, repeated: true, type: :string
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17617, 1080,
@@ -1307,97 +644,105 @@ defmodule Benchmarks.GoogleMessage3.PbExtension do
 
   extend Benchmarks.GoogleMessage3.Message16945, :field17618, 1084, repeated: true, type: :int32
 
-  extend Benchmarks.GoogleMessage3.Message0, :"Message1327.field1373", 23_104_162,
+  extend Benchmarks.GoogleMessage3.Message0, :"Message27300.field27304", 24_956_467,
     optional: true,
-    type: Benchmarks.GoogleMessage3.Message1327
+    type: Benchmarks.GoogleMessage3.Message27300
 
-  extend Benchmarks.GoogleMessage3.Message0, :"Message3672.field3737", 3_144_435,
+  extend Benchmarks.GoogleMessage3.Message0, :"Message24404.field24685", 9_129_287,
     optional: true,
-    type: Benchmarks.GoogleMessage3.Message3672
+    type: Benchmarks.GoogleMessage3.Message24404
 
-  extend Benchmarks.GoogleMessage3.Message0, :"Message3804.field3825", 59_241_828,
+  extend Benchmarks.GoogleMessage3.Message0, :"Message16746.field16810", 28_406_765,
     optional: true,
-    type: Benchmarks.GoogleMessage3.Message3804
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message6849.field6911", 107_558_455,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message6849
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message6866.field6974", 22_259_060,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message6866
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message6870.field6992", 90_034_652,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message6870
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message7651.field7730", 55_876_009,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message7651
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message7864.field7872", 44_542_730,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message7864
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message7929.field7962", 53_392_238,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message7929
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message8508.field8534", 3_811_804,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message8508
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message9122.field9134", 120_398_939,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message9122
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message10177.field10271", 26_801_105,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message10177
-
-  extend Benchmarks.GoogleMessage3.Message10155, :"Message10278.field10289", 29_374_161,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message10278
-
-  extend Benchmarks.GoogleMessage3.Message10155, :"Message10323.field10361", 27_922_524,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message10323
-
-  extend Benchmarks.GoogleMessage3.Message10155, :"Message10324.field10364", 27_832_297,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message10324
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message11990.field12031", 21_265_426,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message11990
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message12691.field12716", 28_426_536,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message12691
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message12870.field12899", 5_447_656,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message12870
-
-  extend Benchmarks.GoogleMessage3.Message13145, :"Message13154.field13166", 47_301_086,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message13154
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message16507.field16542", 5_569_941,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message16507
+    type: Benchmarks.GoogleMessage3.Message16746
 
   extend Benchmarks.GoogleMessage3.Message0, :"Message16564.field16569", 25_830_030,
     optional: true,
     type: Benchmarks.GoogleMessage3.Message16564
 
+  extend Benchmarks.GoogleMessage3.Message13145, :"Message13154.field13166", 47_301_086,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message13154
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message12691.field12716", 28_426_536,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message12691
+
+  extend Benchmarks.GoogleMessage3.Message10155, :"Message10324.field10364", 27_832_297,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message10324
+
+  extend Benchmarks.GoogleMessage3.Message10155, :"Message10278.field10289", 29_374_161,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message10278
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message9122.field9134", 120_398_939,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message9122
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message7929.field7962", 53_392_238,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message7929
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message7651.field7730", 55_876_009,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message7651
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message6866.field6974", 22_259_060,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message6866
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message3804.field3825", 59_241_828,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message3804
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message3672.field3737", 3_144_435,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message3672
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message1327.field1373", 23_104_162,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message1327
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message6849.field6911", 107_558_455,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message6849
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message6870.field6992", 90_034_652,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message6870
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message7864.field7872", 44_542_730,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message7864
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message8508.field8534", 3_811_804,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message8508
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message10177.field10271", 26_801_105,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message10177
+
+  extend Benchmarks.GoogleMessage3.Message10155, :"Message10323.field10361", 27_922_524,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message10323
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message11990.field12031", 21_265_426,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message11990
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message12870.field12899", 5_447_656,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message12870
+
+  extend Benchmarks.GoogleMessage3.Message0, :"Message16507.field16542", 5_569_941,
+    optional: true,
+    type: Benchmarks.GoogleMessage3.Message16507
+
   extend Benchmarks.GoogleMessage3.Message0, :"Message16661.field16673", 31_274_398,
     optional: true,
     type: Benchmarks.GoogleMessage3.Message16661
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message16746.field16810", 28_406_765,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message16746
 
   extend Benchmarks.GoogleMessage3.Message0, :"Message17786.field18176", 11_823_055,
     optional: true,
@@ -1406,14 +751,6 @@ defmodule Benchmarks.GoogleMessage3.PbExtension do
   extend Benchmarks.GoogleMessage3.Message10155, :"Message22857.field22875", 67_799_715,
     optional: true,
     type: Benchmarks.GoogleMessage3.Message22857
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message24404.field24685", 9_129_287,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message24404
-
-  extend Benchmarks.GoogleMessage3.Message0, :"Message27300.field27304", 24_956_467,
-    optional: true,
-    type: Benchmarks.GoogleMessage3.Message27300
 
   extend Benchmarks.GoogleMessage3.Message0, :"Message27453.field27482", 8_086_204,
     optional: true,

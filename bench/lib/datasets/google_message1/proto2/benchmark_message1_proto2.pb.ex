@@ -1,93 +1,6 @@
 defmodule Benchmarks.Proto2.GoogleMessage1 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field1: String.t(),
-          field9: String.t(),
-          field18: String.t(),
-          field80: boolean,
-          field81: boolean,
-          field2: integer,
-          field3: integer,
-          field280: integer,
-          field6: integer,
-          field22: integer,
-          field4: String.t(),
-          field5: [non_neg_integer],
-          field59: boolean,
-          field7: String.t(),
-          field16: integer,
-          field130: integer,
-          field12: boolean,
-          field17: boolean,
-          field13: boolean,
-          field14: boolean,
-          field104: integer,
-          field100: integer,
-          field101: integer,
-          field102: String.t(),
-          field103: String.t(),
-          field29: integer,
-          field30: boolean,
-          field60: integer,
-          field271: integer,
-          field272: integer,
-          field150: integer,
-          field23: integer,
-          field24: boolean,
-          field25: integer,
-          field15: Benchmarks.Proto2.GoogleMessage1SubMessage.t() | nil,
-          field78: boolean,
-          field67: integer,
-          field68: integer,
-          field128: integer,
-          field129: String.t(),
-          field131: integer
-        }
-  defstruct [
-    :field1,
-    :field9,
-    :field18,
-    :field80,
-    :field81,
-    :field2,
-    :field3,
-    :field280,
-    :field6,
-    :field22,
-    :field4,
-    :field5,
-    :field59,
-    :field7,
-    :field16,
-    :field130,
-    :field12,
-    :field17,
-    :field13,
-    :field14,
-    :field104,
-    :field100,
-    :field101,
-    :field102,
-    :field103,
-    :field29,
-    :field30,
-    :field60,
-    :field271,
-    :field272,
-    :field150,
-    :field23,
-    :field24,
-    :field25,
-    :field15,
-    :field78,
-    :field67,
-    :field68,
-    :field128,
-    :field129,
-    :field131
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field1, 1, required: true, type: :string
   field :field9, 9, optional: true, type: :string
@@ -134,52 +47,7 @@ end
 
 defmodule Benchmarks.Proto2.GoogleMessage1SubMessage do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field1: integer,
-          field2: integer,
-          field3: integer,
-          field15: String.t(),
-          field12: boolean,
-          field13: integer,
-          field14: integer,
-          field16: integer,
-          field19: integer,
-          field20: boolean,
-          field28: boolean,
-          field21: non_neg_integer,
-          field22: integer,
-          field23: boolean,
-          field206: boolean,
-          field203: non_neg_integer,
-          field204: integer,
-          field205: String.t(),
-          field207: non_neg_integer,
-          field300: non_neg_integer
-        }
-  defstruct [
-    :field1,
-    :field2,
-    :field3,
-    :field15,
-    :field12,
-    :field13,
-    :field14,
-    :field16,
-    :field19,
-    :field20,
-    :field28,
-    :field21,
-    :field22,
-    :field23,
-    :field206,
-    :field203,
-    :field204,
-    :field205,
-    :field207,
-    :field300
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field1, 1, optional: true, type: :int32, default: 0
   field :field2, 2, optional: true, type: :int32, default: 0

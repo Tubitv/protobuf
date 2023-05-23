@@ -1,4 +1,4 @@
-defmodule Protobuf.Protoc.IntegrationTest do
+defmodule Protobuf.Protoc.GeneratorIntegrationTest do
   use ExUnit.Case, async: true
   @moduletag :integration
 
@@ -54,5 +54,29 @@ defmodule Protobuf.Protoc.IntegrationTest do
 
   test "extensions" do
     assert "hello" == Protobuf.Protoc.ExtTest.Foo.new(a: "hello").a
+  end
+
+  describe "custom options" do
+    # These fail the first time, when extensions are not loaded. Then, they start to pass.
+    @describetag :skip
+
+    test "with enums" do
+      descriptor = Test.EnumWithCustomOptions.descriptor()
+
+      assert %Google.Protobuf.EnumValueDescriptorProto{} =
+               value = Enum.find(descriptor.value, &(&1.number == 1))
+
+      assert %Google.Protobuf.EnumValueOptions{__pb_extensions__: extensions} = value.options
+      assert Map.fetch(extensions, {Test.PbExtension, :my_custom_option}) == {:ok, "hello"}
+    end
+
+    test "with messages" do
+      descriptor = Test.MessageWithCustomOptions.descriptor()
+
+      assert %Google.Protobuf.MessageOptions{__pb_extensions__: extensions} = descriptor.options
+
+      assert Map.fetch(extensions, {Test.PbExtension, :lowercase_name}) ==
+               {:ok, "message_with_custom_options"}
+    end
   end
 end

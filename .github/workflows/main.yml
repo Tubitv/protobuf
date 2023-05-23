@@ -1,68 +1,174 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
   test:
-    name: Test (Elixir ${{matrix.elixir}} | Erlang/OTP ${{matrix.otp}})
+    name: Test (Elixir ${{ matrix.elixir }} | Erlang/OTP ${{ matrix.otp }})
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
         include:
           - otp: 24.0
-            elixir: 1.12.1
+            elixir: 1.12.3
             lint: true
             integration: true
+            coverage: true
           - otp: 23.3
             elixir: 1.11.4
-            integration: true
           - otp: 23.3
             elixir: 1.10.4
           - otp: 22.3
             elixir: 1.9.4
+
     env:
       MIX_ENV: test
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v2
+
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v1
+        with:
+          version: "3.17.3"
+          repo-token: ${{ secrets.GITHUB_TOKEN }} # to avoid rate limiting
+
+      - name: Install OTP and Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
+
+      - name: Cache dependencies
+        id: cache-deps
+        uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}-elixir-${{ matrix.elixir }}-erlang-${{ matrix.otp }}
+
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: mix deps.get
+
+      # Don't cache PLTs based on mix.lock hash, as Dialyzer can incrementally update even old ones
+      # Cache key based on Elixir & Erlang version (also useful when running in matrix)
+      - name: Cache Dialyzer's PLT
+        uses: actions/cache@v2
+        id: cache-plt
+        with:
+          path: priv/plts
+          key: ${{ runner.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-plt
+
+      # Create PLTs if no cache was found
+      - name: Create PLTs
+        if: steps.cache-plt.outputs.cache-hit != 'true'
+        run: mix dialyzer --plt
+
+      - name: Check for unused dependencies
+        run: mix deps.unlock --check-unused
+        if: ${{ matrix.lint }}
+
+      - name: Compile with --warnings-as-errors
+        run: mix compile --warnings-as-errors
+        if: ${{ matrix.lint }}
+
+      - name: Check mix format
+        run: mix format --check-formatted
+        if: ${{ matrix.lint }}
+
+      - name: Run tests with coverage
+        run: mix coveralls.github
+        if: ${{ matrix.coverage }}
+
+      - name: Run tests without coverage
+        run: mix test --trace
+        if: ${{ !matrix.coverage }}
+
+      - name: Run Dialyzer
+        run: mix dialyzer
+
+      - name: Compile .proto files to Elixir with protoc
+        if: ${{ matrix.integration }}
+        env:
+          PROTO_BENCH: ./deps/google_protobuf/benchmarks
+        run: |
+          mix gen_test_protos
+          mix gen_bootstrap_protos
+
+      - name: Run integration tests
+        if: ${{ matrix.integration }}
+        run: mix test --only integration
+
+      - name: Check that generated files did not change
+        if: ${{ matrix.integration }}
+        run: |
+          rm -rf ./google_protobuf
+          if [[ -n "$(git status -uno --porcelain)" ]]; then
+            echo "CHANGES TO THE CODE SEEM TO CHANGE THE GENERATED .pb.ex FILES."
+            echo "MAKE SURE TO RUN THESE TASKS BEFORE MERGING:"
+            echo ""
+            echo "  mix do gen_bootstrap_protos, gen_test_protos, gen_bench_protos"
+            echo ""
+            echo "Run the above commands and `git diff` to verify the changes"
+            exit 1
+          else
+            echo "Generated .pb.ex are up to date"
+          fi
+
+  conformance-test:
+    name: Conformance test (Elixir ${{matrix.elixir}} | Erlang/OTP ${{matrix.otp}})
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        otp: [24.2]
+        elixir: [1.13.1]
+
+    env:
+      MIX_ENV: test
+
     steps:
       - uses: actions/checkout@v2
 
       - name: Install OTP and Elixir
-        uses: erlef/setup-elixir@v1
+        uses: erlef/setup-beam@v1
         with:
-          otp-version: ${{matrix.otp}}
-          elixir-version: ${{matrix.elixir}}
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
+
+      - name: Cache Elixir dependencies with compiled protoc
+        id: cache-deps-with-built-protoc
+        uses: actions/cache@v2
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-deps-with-protoc-${{ hashFiles('**/mix.lock') }}
 
       - name: Install dependencies
-        run: mix deps.get --only test
+        if: steps.cache-deps-with-built-protoc.outputs.cache-hit != 'true'
+        run: mix deps.get
 
-      - name: Check for unused dependencies
-        run: mix deps.get && mix deps.unlock --check-unused
-        if: ${{matrix.lint}}
+      - name: Update and install OS dependencies to build protoc locally
+        if: steps.cache-deps-with-built-protoc.outputs.cache-hit != 'true'
+        # Dependencies from https://github.com/protocolbuffers/protobuf/blob/master/src/README.md
+        run: sudo apt-get update && sudo apt-get install -y git cmake curl make g++
 
-      - name: Compile with --warnings-as-errors
-        run: mix compile --warnings-as-errors
-        if: ${{matrix.lint}}
+      # This builds protoc inside deps (not inside _build), so we can cache that whole directory.
+      - name: Build protoc and the conformance runner from the local Protobuf dependency
+        if: steps.cache-deps-with-built-protoc.outputs.cache-hit != 'true'
+        run: mix build_conformance_runner
 
-      - name: Check mix format
-        run: mix format --check-formatted
-        if: ${{matrix.lint}}
+      # We always need to do this, even if the cache hits.
+      - name: Add protoc to the PATH
+        run: echo "$PWD/deps/google_protobuf" >> $GITHUB_PATH
 
-      - name: Run tests
-        run: mix test --trace
-
-      - name: Install protoc
-        if: ${{matrix.integration}}
+      - name: Run conformance tests
         run: |
-          wget https://github.com/protocolbuffers/protobuf/releases/download/v3.12.3/protoc-3.12.3-linux-x86_64.zip
-          unzip protoc-3.12.3-linux-x86_64.zip
-          echo "./bin" >> $GITHUB_PATH
-
-      - name: Compile .proto files to Elixir with protoc
-        if: ${{matrix.integration}}
-        run: |
-          make clean
-          make gen-protos
-
-      - name: Run integration tests
-        if: ${{matrix.integration}}
-        run: mix test --only integration
+          echo "Using local protoc: $(protoc --version)"
+          mix conformance_test

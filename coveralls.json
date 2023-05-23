@@ -1,0 +1,12 @@
+{
+  "skip_files": [
+    "_build",
+    "deps",
+    "test",
+    "generated",
+    "conformance",
+    "lib/elixirpb.pb.ex",
+    "lib/google/protobuf/compiler/plugin.pb.ex",
+    "lib/google/protobuf/descriptor.pb.ex"
+  ]
+}

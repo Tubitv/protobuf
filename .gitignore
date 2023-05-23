@@ -26,3 +26,14 @@ protobuf-*.tar
 protoc-gen-elixir
 .eqc-info
 *.eqc
+
+# ExUnit's :tmp_dir tag.
+/tmp
+
+# Files generated from .proto source files for testing.
+generated
+
+# Generated artifacts for conformance testing.
+failing_tests.txt
+succeeding_tests.txt
+conformance_client

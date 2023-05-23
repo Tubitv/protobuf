@@ -1,7 +1,19 @@
 defmodule Protobuf.JSON.DecodeTest do
   use ExUnit.Case, async: true
 
-  alias TestMsg.{Foo, Foo.Bar, Maps, OneofProto3, Parent, Parent.Child, Scalars}
+  alias ProtobufTestMessages.Proto3.TestAllTypesProto3
+
+  alias TestMsg.{
+    ContainsTransformModule,
+    Foo,
+    Foo.Bar,
+    Maps,
+    OneofProto3,
+    Parent,
+    Parent.Child,
+    Scalars,
+    WithTransformModule
+  }
 
   def decode(data, module) do
     Protobuf.JSON.from_decoded(data, module)
@@ -182,12 +194,35 @@ defmodule Protobuf.JSON.DecodeTest do
       assert decode(%{"uint64" => -1}, Scalars) == error(msg)
     end
 
-    # TODO: Jason decodes integers in E notation as floats, e.g. 1e2 becomes
-    # 100.0 rather than 100. We need to figure out how to make them integers.
-    # We could try to guess with Float.ratio matching to {_, 1} or maybe with
-    # to_string matching ~r|\.0$| but this might be a bad idea in the end.
-    @tag :skip
-    test "values in E notation are valid"
+    test "values in E notation are valid" do
+      int_types = [
+        :int32,
+        :sint32,
+        :fixed32,
+        :sfixed32,
+        :uint32,
+        :int32,
+        :sint32,
+        :fixed32,
+        :sfixed32,
+        :uint32,
+        :int64,
+        :sint64,
+        :fixed64,
+        :sfixed64,
+        :uint64,
+        :int64,
+        :sint64,
+        :fixed64,
+        :sfixed64,
+        :uint64
+      ]
+
+      for int_type <- int_types do
+        decoded = Scalars.new!([{int_type, 100_000}])
+        assert decode(%{Atom.to_string(int_type) => 1.0e5}, Scalars) == {:ok, decoded}
+      end
+    end
   end
 
   describe "floating point" do
@@ -253,10 +288,13 @@ defmodule Protobuf.JSON.DecodeTest do
       assert decode(data, Scalars) == error(msg)
     end
 
-    # TODO: `double` values out of bounds will already get caught by Jason, `float`
-    # values however will need to be range-limited.
-    @tag :skip
-    test "values outside upper and lower limits are invalid"
+    # Can't really test out of bound doubles since they're out of bound for Erlang too :).
+    test "values outside upper and lower limits are invalid" do
+      data = %{"float" => 1.0e39}
+
+      assert decode(data, Scalars) ==
+               error("Field 'float' has an invalid floating point (1.0e39)")
+    end
   end
 
   describe "bytes" do
@@ -304,7 +342,7 @@ defmodule Protobuf.JSON.DecodeTest do
   describe "enums" do
     test "known integer value is valid" do
       data = %{"j" => 4}
-      decoded = Foo.new!(j: :C)
+      decoded = Foo.new!(j: :E)
       assert decode(data, Foo) == {:ok, decoded}
     end
 
@@ -441,19 +479,19 @@ defmodule Protobuf.JSON.DecodeTest do
 
     test "other types are invalid" do
       data = %{"child" => "invalid"}
-      msg = "JSON map expected, got: \"invalid\""
+      msg = "JSON map expected for module TestMsg.Parent.Child, got: \"invalid\""
       assert decode(data, Parent) == error(msg)
 
       data = %{"child" => 2}
-      msg = "JSON map expected, got: 2"
+      msg = "JSON map expected for module TestMsg.Parent.Child, got: 2"
       assert decode(data, Parent) == error(msg)
 
       data = %{"child" => true}
-      msg = "JSON map expected, got: true"
+      msg = "JSON map expected for module TestMsg.Parent.Child, got: true"
       assert decode(data, Parent) == error(msg)
 
       data = %{"child" => []}
-      msg = "JSON map expected, got: []"
+      msg = "JSON map expected for module TestMsg.Parent.Child, got: []"
       assert decode(data, Parent) == error(msg)
     end
   end
@@ -528,7 +566,7 @@ defmodule Protobuf.JSON.DecodeTest do
       assert decode(data, Foo) == error(msg)
 
       data = %{"h" => [%{}, "not an embed"]}
-      msg = "JSON map expected, got: \"not an embed\""
+      msg = "JSON map expected for module TestMsg.Foo.Bar, got: \"not an embed\""
       assert decode(data, Foo) == error(msg)
     end
 
@@ -591,5 +629,250 @@ defmodule Protobuf.JSON.DecodeTest do
     }
 
     assert decode(data, Foo) == {:ok, Foo.new(e: Bar.new())}
+  end
+
+  test "decodes with transformer module" do
+    assert Protobuf.JSON.decode!(~S|{"field":123}|, WithTransformModule) == 123
+    assert Protobuf.JSON.decode!(~S|{"field":0}|, WithTransformModule) == 0
+    assert Protobuf.JSON.decode!(~S|{}|, WithTransformModule) == 0
+
+    assert Protobuf.JSON.decode!(~S|{"field":{"field":123}}|, ContainsTransformModule) ==
+             %ContainsTransformModule{field: 123}
+
+    assert Protobuf.JSON.decode!(~S|{"field":{"field":0}}|, ContainsTransformModule) ==
+             %ContainsTransformModule{field: 0}
+
+    assert Protobuf.JSON.decode!(~S|{"field":{}}|, ContainsTransformModule) ==
+             %ContainsTransformModule{field: 0}
+
+    assert Protobuf.JSON.decode!(~S|{}|, ContainsTransformModule) ==
+             %ContainsTransformModule{field: nil}
+  end
+
+  describe "Google types" do
+    test "Google.Protobuf.BoolValue" do
+      data = %{
+        "optionalBoolWrapper" => true
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_bool_wrapper: Google.Protobuf.BoolValue.new!(value: true)
+                )}
+    end
+
+    test "Google.Protobuf.Int32Value" do
+      data = %{
+        "optionalInt32Wrapper" => 100
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_int32_wrapper: Google.Protobuf.Int32Value.new!(value: 100)
+                )}
+    end
+
+    test "Google.Protobuf.UInt32Value" do
+      data = %{
+        "optionalUint32Wrapper" => 100
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_uint32_wrapper: Google.Protobuf.UInt32Value.new!(value: 100)
+                )}
+    end
+
+    test "Google.Protobuf.Int64Value" do
+      data = %{
+        "optionalInt64Wrapper" => 100
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_int64_wrapper: Google.Protobuf.Int64Value.new!(value: 100)
+                )}
+    end
+
+    test "Google.Protobuf.UInt64Value" do
+      data = %{
+        "optionalUint64Wrapper" => 100
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_uint64_wrapper: Google.Protobuf.UInt64Value.new!(value: 100)
+                )}
+    end
+
+    test "Google.Protobuf.FloatValue" do
+      data = %{
+        "optionalFloatWrapper" => 3.14
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_float_wrapper: Google.Protobuf.FloatValue.new!(value: 3.14)
+                )}
+    end
+
+    test "Google.Protobuf.DoubleValue" do
+      data = %{
+        "optionalDoubleWrapper" => 3.14444
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_double_wrapper: Google.Protobuf.DoubleValue.new!(value: 3.14444)
+                )}
+    end
+
+    test "Google.Protobuf.StringValue" do
+      data = %{
+        "optionalStringWrapper" => "my string"
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_string_wrapper: Google.Protobuf.StringValue.new!(value: "my string")
+                )}
+    end
+
+    test "Google.Protobuf.BytesValue" do
+      data = %{
+        "optionalBytesWrapper" => Base.url_encode64(<<1, 2, 3>>)
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  optional_bytes_wrapper: Google.Protobuf.BytesValue.new!(value: <<1, 2, 3>>)
+                )}
+    end
+
+    test "Google.Protobuf.FieldMask with empty field mask" do
+      cases = [
+        {"", []},
+        {"helloWorld1", ["hello_world1"]},
+        {"fooBar,baz2Bong", ["foo_bar", "baz2_bong"]}
+      ]
+
+      for {json, expected_paths} <- cases do
+        data = %{"optionalFieldMask" => json}
+
+        assert decode(data, TestAllTypesProto3) ==
+                 {:ok,
+                  TestAllTypesProto3.new(
+                    optional_field_mask: Google.Protobuf.FieldMask.new!(paths: expected_paths)
+                  )}
+      end
+
+      # Error with bad type.
+      data = %{"optionalFieldMask" => 1}
+      assert {:error, %Protobuf.JSON.DecodeError{} = error} = decode(data, TestAllTypesProto3)
+
+      assert Exception.message(error) ==
+               "JSON map expected for module Google.Protobuf.FieldMask, got: 1"
+
+      # Error with bad mask.
+      data = %{"optionalFieldMask" => "goodMask,badmask!"}
+      assert {:error, %Protobuf.JSON.DecodeError{} = error} = decode(data, TestAllTypesProto3)
+      assert Exception.message(error) == ~s(invalid characters in field mask: "badmask!")
+    end
+
+    test "Google.Protobuf.ListValue" do
+      data = %{
+        "repeatedListValue" => [[1, "two", 3.14, true, nil], [%{"foo" => "bar"}, []]]
+      }
+
+      assert decode(data, TestAllTypesProto3) ==
+               {:ok,
+                TestAllTypesProto3.new(
+                  repeated_list_value: [
+                    Google.Protobuf.ListValue.new!(
+                      values: [
+                        Google.Protobuf.Value.new!(kind: {:number_value, 1.0}),
+                        Google.Protobuf.Value.new!(kind: {:string_value, "two"}),
+                        Google.Protobuf.Value.new!(kind: {:number_value, 3.14}),
+                        Google.Protobuf.Value.new!(kind: {:bool_value, true}),
+                        Google.Protobuf.Value.new!(kind: {:null_value, :NULL_VALUE})
+                      ]
+                    ),
+                    Google.Protobuf.ListValue.new!(
+                      values: [
+                        Google.Protobuf.Value.new!(
+                          kind:
+                            {:struct_value,
+                             Google.Protobuf.Struct.new!(
+                               fields: %{
+                                 "foo" => Google.Protobuf.Value.new!(kind: {:string_value, "bar"})
+                               }
+                             )}
+                        ),
+                        Google.Protobuf.Value.new!(
+                          kind: {:list_value, Google.Protobuf.ListValue.new!(values: [])}
+                        )
+                      ]
+                    )
+                  ]
+                )}
+    end
+
+    test "Google.Protobuf.Duration" do
+      cases = [
+        %{string: "123s", seconds: 123, nanos: 0},
+        %{string: "123.001s", seconds: 123, nanos: 1_000_000},
+        %{string: "123.000s", seconds: 123, nanos: 0},
+        %{string: "0.000000001s", seconds: 0, nanos: 1},
+        %{string: "-1s", seconds: -1, nanos: 0},
+        %{string: "-1.1s", seconds: -1, nanos: -100_000_000},
+        %{string: "-0.5s", seconds: 0, nanos: -500_000_000}
+      ]
+
+      for %{string: string, seconds: expected_seconds, nanos: expected_nanos} <- cases do
+        data = %{"optionalDuration" => string}
+
+        expected_duration =
+          Google.Protobuf.Duration.new!(seconds: expected_seconds, nanos: expected_nanos)
+
+        assert {:ok, decoded} = decode(data, TestAllTypesProto3)
+        assert decoded.optional_duration == expected_duration
+      end
+
+      # Errors
+
+      max_duration = 315_576_000_000
+
+      data = %{"optionalDuration" => "#{max_duration + 1}s"}
+
+      assert decode(data, TestAllTypesProto3) ==
+               error("bad JSON value for duration \"315576000001s\", got: {315576000001, \"s\"}")
+
+      data = %{"optionalDuration" => "#{-max_duration - 1}s"}
+
+      assert decode(data, TestAllTypesProto3) ==
+               error(
+                 "bad JSON value for duration \"-315576000001s\", got: {-315576000001, \"s\"}"
+               )
+    end
+
+    test "Google.Protobuf.Timestamp" do
+      # Errors
+
+      data = %{"optionalTimestamp" => "0000-01-01T00:00:00Z"}
+
+      assert decode(data, TestAllTypesProto3) ==
+               error(
+                 "bad JSON value for timestamp \"0000-01-01T00:00:00Z\", failed to parse: \"timestamp is outside of allowed range\""
+               )
+    end
   end
 end

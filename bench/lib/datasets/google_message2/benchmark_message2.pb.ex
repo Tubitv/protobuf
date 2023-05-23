@@ -1,43 +1,6 @@
 defmodule Benchmarks.Proto2.GoogleMessage2.Group1 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field11: float | :infinity | :negative_infinity | :nan,
-          field26: float | :infinity | :negative_infinity | :nan,
-          field12: String.t(),
-          field13: String.t(),
-          field14: [String.t()],
-          field15: non_neg_integer,
-          field5: integer,
-          field27: String.t(),
-          field28: integer,
-          field29: String.t(),
-          field16: String.t(),
-          field22: [String.t()],
-          field73: [integer],
-          field20: integer,
-          field24: String.t(),
-          field31: Benchmarks.Proto2.GoogleMessage2GroupedMessage.t() | nil
-        }
-  defstruct [
-    :field11,
-    :field26,
-    :field12,
-    :field13,
-    :field14,
-    :field15,
-    :field5,
-    :field27,
-    :field28,
-    :field29,
-    :field16,
-    :field22,
-    :field73,
-    :field20,
-    :field24,
-    :field31
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field11, 11, required: true, type: :float
   field :field26, 26, optional: true, type: :float
@@ -59,72 +22,7 @@ end
 
 defmodule Benchmarks.Proto2.GoogleMessage2 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field1: String.t(),
-          field3: integer,
-          field4: integer,
-          field30: integer,
-          field75: boolean,
-          field6: String.t(),
-          field2: binary,
-          field21: integer,
-          field71: integer,
-          field25: float | :infinity | :negative_infinity | :nan,
-          field109: integer,
-          field210: integer,
-          field211: integer,
-          field212: integer,
-          field213: integer,
-          field216: integer,
-          field217: integer,
-          field218: integer,
-          field220: integer,
-          field221: integer,
-          field222: float | :infinity | :negative_infinity | :nan,
-          field63: integer,
-          group1: [any],
-          field128: [String.t()],
-          field131: integer,
-          field127: [String.t()],
-          field129: integer,
-          field130: [integer],
-          field205: boolean,
-          field206: boolean
-        }
-  defstruct [
-    :field1,
-    :field3,
-    :field4,
-    :field30,
-    :field75,
-    :field6,
-    :field2,
-    :field21,
-    :field71,
-    :field25,
-    :field109,
-    :field210,
-    :field211,
-    :field212,
-    :field213,
-    :field216,
-    :field217,
-    :field218,
-    :field220,
-    :field221,
-    :field222,
-    :field63,
-    :group1,
-    :field128,
-    :field131,
-    :field127,
-    :field129,
-    :field130,
-    :field205,
-    :field206
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field1, 1, optional: true, type: :string
   field :field3, 3, optional: true, type: :int64
@@ -160,34 +58,7 @@ end
 
 defmodule Benchmarks.Proto2.GoogleMessage2GroupedMessage do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field1: float | :infinity | :negative_infinity | :nan,
-          field2: float | :infinity | :negative_infinity | :nan,
-          field3: float | :infinity | :negative_infinity | :nan,
-          field4: boolean,
-          field5: boolean,
-          field6: boolean,
-          field7: boolean,
-          field8: float | :infinity | :negative_infinity | :nan,
-          field9: boolean,
-          field10: float | :infinity | :negative_infinity | :nan,
-          field11: integer
-        }
-  defstruct [
-    :field1,
-    :field2,
-    :field3,
-    :field4,
-    :field5,
-    :field6,
-    :field7,
-    :field8,
-    :field9,
-    :field10,
-    :field11
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field1, 1, optional: true, type: :float
   field :field2, 2, optional: true, type: :float

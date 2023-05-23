@@ -1,127 +1,160 @@
 defmodule Protobuf.Encoder do
   @moduledoc false
+
   import Protobuf.Wire.Types
   import Bitwise, only: [bsl: 2, bor: 2]
 
   alias Protobuf.{FieldProps, MessageProps, Wire, Wire.Varint}
 
-  @spec encode(atom, map | struct, keyword) :: iodata
-  def encode(mod, msg, opts) do
-    case msg do
-      %{__struct__: ^mod} ->
-        encode(msg, opts)
-
-      _ ->
-        encode(mod.new(msg), opts)
-    end
+  @spec encode_to_iodata(struct()) :: iodata()
+  def encode_to_iodata(%mod{} = struct) do
+    encode_with_message_props(struct, mod.__message_props__())
   end
 
-  @spec encode(struct, keyword) :: iodata
-  def encode(%mod{} = struct, opts \\ []) do
-    res = encode!(struct, mod.__message_props__())
-
-    case Keyword.fetch(opts, :iolist) do
-      {:ok, true} -> res
-      _ -> IO.iodata_to_binary(res)
-    end
+  @spec encode(struct()) :: binary()
+  def encode(%mod{} = struct) do
+    struct
+    |> transform_module(mod)
+    |> encode_with_message_props(mod.__message_props__())
+    |> IO.iodata_to_binary()
   end
 
-  @spec encode!(struct, MessageProps.t()) :: iodata
-  def encode!(struct, %{field_props: field_props} = props) do
-    syntax = props.syntax
+  defp encode_with_message_props(
+         struct,
+         %MessageProps{syntax: syntax, field_props: field_props, ordered_tags: ordered_tags} =
+           props
+       ) do
     oneofs = oneof_actual_vals(props, struct)
 
-    encoded = encode_fields(Map.values(field_props), syntax, struct, oneofs, [])
-
+    # We encode the fields in order since some recommended conformance tests expect us to do so.
     encoded =
-      if syntax == :proto2 do
-        encode_extensions(struct, encoded)
-      else
-        encoded
-      end
+      ordered_tags
+      |> Enum.map(fn fnum -> Map.fetch!(field_props, fnum) end)
+      |> encode_fields(syntax, struct, oneofs, _acc = [])
 
-    encoded
-    |> Enum.reverse()
-  catch
-    {e, msg, st} ->
-      reraise e, msg, st
+    encoded = [encoded | encode_unknown_fields(struct)]
+
+    if syntax == :proto2 do
+      [encoded | encode_extensions(struct)]
+    else
+      encoded
+    end
   end
 
-  defp encode_fields([], _, _, _, acc) do
+  defp encode_fields(_fields = [], _syntax, _struct, _oneofs, acc) do
     acc
   end
 
-  defp encode_fields([prop | tail], syntax, struct, oneofs, acc) do
-    %{name_atom: name, oneof: oneof} = prop
-
+  defp encode_fields(
+         [%FieldProps{name_atom: name, oneof: oneof} = prop | rest],
+         syntax,
+         struct,
+         oneofs,
+         acc
+       ) do
     val =
       if oneof do
         oneofs[name]
       else
-        case struct do
-          %{^name => v} ->
-            v
-
-          _ ->
-            nil
-        end
+        Map.get(struct, name, nil)
       end
 
-    if skip_field?(syntax, val, prop) || skip_enum?(prop, val) do
-      encode_fields(tail, syntax, struct, oneofs, acc)
-    else
-      acc = [encode_field(class_field(prop), val, prop) | acc]
-      encode_fields(tail, syntax, struct, oneofs, acc)
-    end
+    acc =
+      case encode_field(class_field(prop), val, syntax, prop) do
+        {:ok, iodata} -> [acc | iodata]
+        :skip -> acc
+      end
+
+    encode_fields(rest, syntax, struct, oneofs, acc)
   rescue
     error ->
-      msg =
-        "Got error when encoding #{inspect(struct.__struct__)}##{prop.name_atom}: #{Exception.format(:error, error)}"
-
-      throw({Protobuf.EncodeError, [message: msg], __STACKTRACE__})
+      raise Protobuf.EncodeError,
+        message:
+          "Got error when encoding #{inspect(struct.__struct__)}##{prop.name_atom}: #{Exception.format(:error, error)}"
   end
 
-  @doc false
-  def skip_field?(syntax, val, prop)
-  def skip_field?(_, [], _), do: true
-  def skip_field?(_, v, _) when map_size(v) == 0, do: true
-  def skip_field?(:proto2, nil, %{optional?: true}), do: true
-  def skip_field?(:proto3, nil, _), do: true
-  def skip_field?(:proto3, 0, %{oneof: nil}), do: true
-  def skip_field?(:proto3, 0.0, %{oneof: nil}), do: true
-  def skip_field?(:proto3, "", %{oneof: nil}), do: true
-  def skip_field?(:proto3, false, %{oneof: nil}), do: true
-  def skip_field?(_, _, _), do: false
+  defp skip_field?(_syntax, [], _prop), do: true
+  defp skip_field?(_syntax, val, _prop) when is_map(val), do: map_size(val) == 0
+  defp skip_field?(:proto2, nil, %FieldProps{optional?: optional?}), do: optional?
+  defp skip_field?(:proto2, value, %FieldProps{default: value, oneof: nil}), do: true
 
-  @spec encode_field(atom, any, FieldProps.t()) :: iodata
-  defp encode_field(:normal, val, %{encoded_fnum: fnum, type: type, repeated?: is_repeated}) do
-    repeated_or_not(val, is_repeated, fn v ->
-      [fnum | Wire.from_proto(type, v)]
-    end)
+  defp skip_field?(:proto3, val, %FieldProps{proto3_optional?: true}),
+    do: is_nil(val)
+
+  defp skip_field?(:proto3, nil, _prop), do: true
+  defp skip_field?(:proto3, 0, %FieldProps{oneof: nil}), do: true
+  defp skip_field?(:proto3, 0.0, %FieldProps{oneof: nil}), do: true
+  defp skip_field?(:proto3, "", %FieldProps{oneof: nil}), do: true
+  defp skip_field?(:proto3, false, %FieldProps{oneof: nil}), do: true
+  defp skip_field?(_syntax, _val, _prop), do: false
+
+  defp encode_field(
+         :normal,
+         val,
+         syntax,
+         %FieldProps{encoded_fnum: fnum, type: type, repeated?: repeated?} = prop
+       ) do
+    if skip_field?(syntax, val, prop) or skip_enum?(syntax, val, prop) do
+      :skip
+    else
+      iodata = apply_or_map(val, repeated?, &[fnum | Wire.encode(type, &1)])
+      {:ok, iodata}
+    end
+  end
+
+  defp encode_field(:embedded, _val = nil, _syntax, _prop) do
+    :skip
   end
 
   defp encode_field(
          :embedded,
          val,
-         %{encoded_fnum: fnum, repeated?: is_repeated, map?: is_map, type: type} = prop
+         syntax,
+         %FieldProps{encoded_fnum: fnum, repeated?: repeated?, map?: map?, type: type} = prop
        ) do
-    repeated = is_repeated || is_map
+    result =
+      apply_or_map(val, repeated? || map?, fn val ->
+        val = transform_module(val, type)
 
-    repeated_or_not(val, repeated, fn v ->
-      v = if is_map, do: struct(prop.type, %{key: elem(v, 0), value: elem(v, 1)}), else: v
-      v = transform_module(v, prop.type)
-      # so that oneof {:atom, v} can be encoded
-      encoded = encode(type, v, iolist: true)
+        if skip_field?(syntax, val, prop) do
+          ""
+        else
+          val = if map?, do: struct(type, %{key: elem(val, 0), value: elem(val, 1)}), else: val
+
+          # so that oneof {:atom, val} can be encoded
+          encoded = encode_from_type(type, val)
+          byte_size = IO.iodata_length(encoded)
+          [fnum | Varint.encode(byte_size)] ++ encoded
+        end
+      end)
+
+    {:ok, result}
+  end
+
+  defp encode_field(:packed, val, syntax, %FieldProps{type: type, encoded_fnum: fnum} = prop) do
+    if skip_field?(syntax, val, prop) or skip_enum?(syntax, val, prop) do
+      :skip
+    else
+      encoded = Enum.map(val, &Wire.encode(type, &1))
       byte_size = IO.iodata_length(encoded)
-      [fnum | Varint.encode(byte_size)] ++ encoded
+      {:ok, [fnum | Varint.encode(byte_size)] ++ encoded}
+    end
+  end
+
+  defp encode_from_type(mod, msg) do
+    case msg do
+      %{__struct__: ^mod} -> encode_to_iodata(msg)
+      _ -> encode_to_iodata(mod.new(msg))
+    end
+  end
+
+  defp encode_unknown_fields(%_{__unknown_fields__: unknown_fields} = _message) do
+    Enum.map(unknown_fields, fn {fnum, wire_type, value} ->
+      [encode_fnum(fnum, wire_type), Wire.encode_from_wire_type(wire_type, value)]
     end)
   end
 
-  defp encode_field(:packed, val, %{type: type, encoded_fnum: fnum}) do
-    encoded = Enum.map(val, fn v -> Wire.from_proto(type, v) end)
-    byte_size = IO.iodata_length(encoded)
-    [fnum | Varint.encode(byte_size)] ++ encoded
-  end
+  defp encode_unknown_fields(_message), do: []
 
   defp transform_module(message, module) do
     if transform_module = module.transform_module() do
@@ -131,18 +164,9 @@ defmodule Protobuf.Encoder do
     end
   end
 
-  @spec class_field(map) :: atom
-  defp class_field(%{wire_type: wire_delimited(), embedded?: true}) do
-    :embedded
-  end
-
-  defp class_field(%{repeated?: true, packed?: true}) do
-    :packed
-  end
-
-  defp class_field(_) do
-    :normal
-  end
+  defp class_field(%FieldProps{wire_type: wire_delimited(), embedded?: true}), do: :embedded
+  defp class_field(%FieldProps{repeated?: true, packed?: true}), do: :packed
+  defp class_field(_prop), do: :normal
 
   @doc false
   @spec encode_fnum(integer, integer) :: binary
@@ -154,79 +178,76 @@ defmodule Protobuf.Encoder do
     |> IO.iodata_to_binary()
   end
 
-  @doc false
-  @spec wire_type(atom) :: integer
-  def wire_type(:int32), do: wire_varint()
-  def wire_type(:int64), do: wire_varint()
-  def wire_type(:uint32), do: wire_varint()
-  def wire_type(:uint64), do: wire_varint()
-  def wire_type(:sint32), do: wire_varint()
-  def wire_type(:sint64), do: wire_varint()
-  def wire_type(:bool), do: wire_varint()
-  def wire_type({:enum, _}), do: wire_varint()
-  def wire_type(:enum), do: wire_varint()
-  def wire_type(:fixed64), do: wire_64bits()
-  def wire_type(:sfixed64), do: wire_64bits()
-  def wire_type(:double), do: wire_64bits()
-  def wire_type(:string), do: wire_delimited()
-  def wire_type(:bytes), do: wire_delimited()
-  def wire_type(:fixed32), do: wire_32bits()
-  def wire_type(:sfixed32), do: wire_32bits()
-  def wire_type(:float), do: wire_32bits()
-  def wire_type(mod) when is_atom(mod), do: wire_delimited()
+  defp apply_or_map(val, _repeated? = true, func), do: Enum.map(val, func)
+  defp apply_or_map(val, _repeated? = false, func), do: func.(val)
 
-  defp repeated_or_not(val, repeated, func) do
-    if repeated do
-      Enum.map(val, func)
-    else
-      func.(val)
-    end
-  end
+  defp skip_enum?(:proto2, _value, _prop), do: false
+  defp skip_enum?(:proto3, _value, %FieldProps{proto3_optional?: true}), do: false
+  defp skip_enum?(_syntax, _value, %FieldProps{enum?: false}), do: false
 
-  defp skip_enum?(prop, value)
-  defp skip_enum?(%{enum?: false}, _), do: false
-  defp skip_enum?(%{enum?: true, oneof: oneof}, _) when not is_nil(oneof), do: false
-  defp skip_enum?(%{required?: true}, _), do: false
-  defp skip_enum?(%{type: type}, value), do: is_enum_default?(type, value)
+  defp skip_enum?(_syntax, _value, %FieldProps{enum?: true, oneof: oneof}) when not is_nil(oneof),
+    do: false
 
-  defp is_enum_default?({_, type}, v) when is_atom(v), do: type.value(v) == 0
-  defp is_enum_default?({_, _}, v) when is_integer(v), do: v == 0
-  defp is_enum_default?({_, _}, _), do: false
+  defp skip_enum?(_syntax, _value, %FieldProps{required?: true}), do: false
+  defp skip_enum?(_syntax, value, %FieldProps{type: type}), do: enum_default?(type, value)
 
+  defp enum_default?({:enum, enum_mod}, val) when is_atom(val), do: enum_mod.value(val) == 0
+  defp enum_default?({:enum, _enum_mod}, val) when is_integer(val), do: val == 0
+  defp enum_default?({:enum, _enum_mod}, list) when is_list(list), do: false
+
+  # Returns a map of %{field_name => field_value} from oneofs. For example, if you have:
+  # oneof body {
+  #   string a = 1;
+  #   string b = 2
+  # }
+  # Then this could return: %{a: "some value"}
   defp oneof_actual_vals(
-         %{field_tags: field_tags, field_props: field_props, oneof: oneof},
+         %MessageProps{field_tags: field_tags, field_props: field_props, oneof: oneof},
          struct
        ) do
     Enum.reduce(oneof, %{}, fn {field, index}, acc ->
-      case Map.get(struct, field, nil) do
-        {f, val} ->
-          %{oneof: oneof} = field_props[field_tags[f]]
+      case Map.fetch(struct, field) do
+        {:ok, {field_name, value}} when is_atom(field_name) ->
+          oneof =
+            case field_props[field_tags[field_name]] do
+              %FieldProps{oneof: oneof} ->
+                oneof
+
+              nil ->
+                raise Protobuf.EncodeError,
+                  message:
+                    "#{inspect(field_name)} wasn't found in #{inspect(struct.__struct__)}##{field}"
+            end
 
           if oneof != index do
             raise Protobuf.EncodeError,
-              message: ":#{f} doesn't belongs to #{inspect(struct.__struct__)}##{field}"
+              message:
+                "#{inspect(field_name)} doesn't belong to #{inspect(struct.__struct__)}##{field}"
           else
-            Map.put(acc, f, val)
+            Map.put(acc, field_name, value)
           end
 
-        nil ->
+        {:ok, nil} ->
           acc
 
-        _ ->
+        :error ->
+          acc
+
+        other ->
           raise Protobuf.EncodeError,
-            message: "#{inspect(struct.__struct__)}##{field} should be {key, val} or nil"
+            message:
+              "#{inspect(struct.__struct__)}##{field} should be {key, val}, got: #{inspect(other)}"
       end
     end)
   end
 
-  defp encode_extensions(%mod{__pb_extensions__: pb_exts}, encoded) when is_map(pb_exts) do
-    Enum.reduce(pb_exts, encoded, fn {{ext_mod, key}, val}, acc ->
+  defp encode_extensions(%mod{__pb_extensions__: pb_exts}) when is_map(pb_exts) do
+    Enum.reduce(pb_exts, [], fn {{ext_mod, key}, val}, acc ->
       case Protobuf.Extension.get_extension_props(mod, ext_mod, key) do
         %{field_props: prop} ->
-          if skip_field?(:proto2, val, prop) || skip_enum?(prop, val) do
-            encoded
-          else
-            [encode_field(class_field(prop), val, prop) | acc]
+          case encode_field(class_field(prop), val, :proto2, prop) do
+            {:ok, iodata} -> [acc | iodata]
+            :skip -> acc
           end
 
         _ ->
@@ -235,7 +256,7 @@ defmodule Protobuf.Encoder do
     end)
   end
 
-  defp encode_extensions(_, encoded) do
-    encoded
+  defp encode_extensions(_) do
+    []
   end
 end

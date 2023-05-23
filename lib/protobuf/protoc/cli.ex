@@ -1,10 +1,9 @@
 defmodule Protobuf.Protoc.CLI do
   @moduledoc """
-  protoc plugin for generating Elixir code.
+  `protoc` plugin for generating Elixir code.
 
-  See `protoc -h` and protobuf-elixir for details.
-
-  **NOTICE:** protoc-gen-elixir(this name is important) must be in `$PATH`.
+  `protoc-gen-elixir` (this name is important) **must** be in `$PATH`. You are not supposed
+  to call it directly, but only through `protoc`.
 
   ## Examples
 
@@ -13,139 +12,205 @@ defmodule Protobuf.Protoc.CLI do
       $ protoc -I protos --elixir_out=./lib protos/namespace/*.proto
 
   Options:
-  * --version       Print version of protobuf-elixir
-  * --help          Print this help
+
+    * --version       Print version of protobuf-elixir
+    * --help (-h)     Print this help
+
   """
 
+  alias Protobuf.Protoc.Context
+
+  # Entrypoint for the escript (protoc-gen-elixir).
   @doc false
+  @spec main([String.t()]) :: :ok
+  def main(args)
+
   def main(["--version"]) do
     {:ok, version} = :application.get_key(:protobuf, :vsn)
-    IO.puts(to_string(version))
+    IO.puts(version)
   end
 
   def main([opt]) when opt in ["--help", "-h"] do
     IO.puts(@moduledoc)
   end
 
-  def main(_) do
-    # https://groups.google.com/forum/#!topic/elixir-lang-talk/T5enez_BBTI
+  # When called through protoc, all input is passed through stdin.
+  def main([] = _args) do
+    Protobuf.load_extensions()
+
+    # See https://groups.google.com/forum/#!topic/elixir-lang-talk/T5enez_BBTI.
     :io.setopts(:standard_io, encoding: :latin1)
-    bin = IO.binread(:all)
+
+    # Read the standard input that protoc feeds us.
+    bin = binread_all!(:stdio)
+
     request = Protobuf.Decoder.decode(bin, Google.Protobuf.Compiler.CodeGeneratorRequest)
 
-    # debug
-    # raise inspect(request, limit: :infinity)
-
     ctx =
-      %Protobuf.Protoc.Context{}
-      |> parse_params(request.parameter)
-      |> find_types(request.proto_file)
+      %Context{}
+      |> parse_params(request.parameter || "")
+      |> find_types(request.proto_file, request.file_to_generate)
 
     files =
-      request.proto_file
-      |> Enum.filter(fn desc -> Enum.member?(request.file_to_generate, desc.name) end)
-      |> Enum.map(fn desc -> Protobuf.Protoc.Generator.generate(ctx, desc) end)
+      Enum.flat_map(request.file_to_generate, fn file ->
+        desc = Enum.find(request.proto_file, &(&1.name == file))
+        Protobuf.Protoc.Generator.generate(ctx, desc)
+      end)
 
-    response = Google.Protobuf.Compiler.CodeGeneratorResponse.new(file: files)
-    IO.binwrite(Protobuf.Encoder.encode(response))
+    Google.Protobuf.Compiler.CodeGeneratorResponse.new(
+      file: files,
+      supported_features: supported_features()
+    )
+    |> Protobuf.encode_to_iodata()
+    |> IO.binwrite()
   end
 
+  def main(_args) do
+    raise "invalid arguments. See protoc-gen-elixir --help."
+  end
+
+  def supported_features() do
+    # The only available feature is proto3 with optional fields.
+    # This is backwards compatible with proto2 optional fields.
+    Google.Protobuf.Compiler.CodeGeneratorResponse.Feature.value(:FEATURE_PROTO3_OPTIONAL)
+  end
+
+  # Made public for testing.
   @doc false
-  def parse_params(ctx, params_str) when is_binary(params_str) do
-    params = String.split(params_str, ",")
-    parse_params(ctx, params)
+  def parse_params(%Context{} = ctx, params_str) when is_binary(params_str) do
+    params_str
+    |> String.split(",")
+    |> Enum.reduce(ctx, &parse_param/2)
   end
 
-  def parse_params(ctx, ["plugins=" <> plugins | t]) do
-    plugins = String.split(plugins, "+")
-    ctx = %{ctx | plugins: plugins}
-    parse_params(ctx, t)
+  defp parse_param("plugins=" <> plugins, ctx) do
+    %Context{ctx | plugins: String.split(plugins, "+")}
   end
 
-  def parse_params(ctx, ["gen_descriptors=true" | t]) do
-    ctx = %{ctx | gen_descriptors?: true}
-    parse_params(ctx, t)
+  defp parse_param("gen_descriptors=" <> value, ctx) do
+    case value do
+      "true" ->
+        %Context{ctx | gen_descriptors?: true}
+
+      other ->
+        raise "invalid value for gen_descriptors option, expected \"true\", got: #{inspect(other)}"
+    end
   end
 
-  def parse_params(ctx, ["package_prefix=" <> package | t]) do
-    ctx = %{ctx | package_prefix: package}
-    parse_params(ctx, t)
+  defp parse_param("package_prefix=" <> package, ctx) do
+    if package == "" do
+      raise "package_prefix can't be empty"
+    else
+      %Context{ctx | package_prefix: package}
+    end
   end
 
-  def parse_params(ctx, ["transform_module=" <> module | t]) do
-    ctx = %{ctx | transform_module: Module.concat([module])}
-    parse_params(ctx, t)
+  defp parse_param("transform_module=" <> module, ctx) do
+    %Context{ctx | transform_module: Module.concat([module])}
   end
 
-  def parse_params(ctx, _), do: ctx
+  defp parse_param("one_file_per_module=" <> value, ctx) do
+    case value do
+      "true" ->
+        %Context{ctx | one_file_per_module?: true}
 
+      other ->
+        raise "invalid value for one_file_per_module option, expected \"true\", got: #{inspect(other)}"
+    end
+  end
+
+  defp parse_param(_unknown, ctx) do
+    ctx
+  end
+
+  # Made public for testing.
   @doc false
-  def find_types(ctx, descs) do
-    find_types(ctx, descs, %{})
+  @spec find_types(Context.t(), [Google.Protobuf.FileDescriptorProto.t()], [String.t()]) ::
+          Context.t()
+  def find_types(%Context{} = ctx, descs, files_to_generate)
+      when is_list(descs) and is_list(files_to_generate) do
+    global_type_mapping =
+      Map.new(descs, fn %Google.Protobuf.FileDescriptorProto{name: filename} = desc ->
+        {filename, find_types_in_proto(ctx, desc, files_to_generate)}
+      end)
+
+    %Context{ctx | global_type_mapping: global_type_mapping}
   end
 
-  @doc false
-  def find_types(ctx, [], acc), do: %{ctx | global_type_mapping: acc}
+  defp find_types_in_proto(
+         %Context{} = ctx,
+         %Google.Protobuf.FileDescriptorProto{} = desc,
+         files_to_generate
+       ) do
+    # Only take package_prefix into consideration for files that we're directly generating.
+    package_prefix =
+      if desc.name in files_to_generate do
+        ctx.package_prefix
+      else
+        nil
+      end
 
-  def find_types(ctx, [desc | t], acc) do
-    types = find_types_in_proto(ctx, desc)
-    find_types(ctx, t, Map.put(acc, desc.name, types))
-  end
-
-  @doc false
-  def find_types_in_proto(ctx, %Google.Protobuf.FileDescriptorProto{} = desc) do
     ctx =
       %Protobuf.Protoc.Context{
         namespace: [],
-        package_prefix: ctx.package_prefix,
+        package_prefix: package_prefix,
         package: desc.package
       }
-      |> Protobuf.Protoc.Context.cal_file_options(desc.options)
+      |> Protobuf.Protoc.Context.custom_file_options_from_file_desc(desc)
 
-    %{}
-    |> find_types_in_proto(ctx, desc.message_type)
-    |> find_types_in_proto(ctx, desc.enum_type)
+    find_types_in_descriptor(_types = %{}, ctx, desc.message_type ++ desc.enum_type)
   end
 
-  defp find_types_in_proto(types, ctx, descs) when is_list(descs) do
-    Enum.reduce(descs, types, fn desc, acc ->
-      find_types_in_proto(acc, ctx, desc)
-    end)
+  defp find_types_in_descriptor(types_acc, ctx, descs) when is_list(descs) do
+    Enum.reduce(descs, types_acc, &find_types_in_descriptor(_acc = &2, ctx, _desc = &1))
   end
 
-  defp find_types_in_proto(types, ctx, %Google.Protobuf.DescriptorProto{name: name} = desc) do
-    new_ctx = append_ns(ctx, name)
+  defp find_types_in_descriptor(
+         types_acc,
+         ctx,
+         %Google.Protobuf.DescriptorProto{name: name} = desc
+       ) do
+    new_ctx = update_in(ctx.namespace, &(&1 ++ [name]))
 
-    types
+    types_acc
     |> update_types(ctx, name)
-    |> find_types_in_proto(new_ctx, desc.enum_type)
-    |> find_types_in_proto(new_ctx, desc.nested_type)
+    |> find_types_in_descriptor(new_ctx, desc.enum_type)
+    |> find_types_in_descriptor(new_ctx, desc.nested_type)
   end
 
-  defp find_types_in_proto(types, ctx, %Google.Protobuf.EnumDescriptorProto{name: name}) do
-    update_types(types, ctx, name)
+  defp find_types_in_descriptor(
+         types_acc,
+         ctx,
+         %Google.Protobuf.EnumDescriptorProto{name: name}
+       ) do
+    update_types(types_acc, ctx, name)
   end
 
-  defp append_ns(%{namespace: ns} = ctx, name) do
-    new_ns = ns ++ [name]
-    Map.put(ctx, :namespace, new_ns)
+  defp update_types(types, %Context{namespace: ns, package: pkg} = ctx, name) do
+    type_name = Protobuf.Protoc.Generator.Util.mod_name(ctx, ns ++ [name])
+
+    mapping_name =
+      ([pkg] ++ ns ++ [name])
+      |> Enum.reject(&is_nil/1)
+      |> Enum.join(".")
+
+    Map.put(types, "." <> mapping_name, %{type_name: type_name})
   end
 
-  defp update_types(types, %{namespace: ns, package: pkg} = ctx, name) do
-    type_name =
-      ctx
-      |> Protobuf.Protoc.Generator.Util.prefixed_name()
-      |> join_names(ns, name)
-      |> Protobuf.Protoc.Generator.Util.normalize_type_name()
-
-    Map.put(types, "." <> join_names(pkg, ns, name), %{type_name: type_name})
-  end
-
-  defp join_names(pkg, ns, name) do
-    ns_str = Protobuf.Protoc.Generator.Util.join_name(ns)
-
-    [pkg, ns_str, name]
-    |> Enum.filter(&(&1 && &1 != ""))
-    |> Enum.join(".")
+  if Version.match?(System.version(), "~> 1.13") do
+    defp binread_all!(device) do
+      case IO.binread(device, :eof) do
+        data when is_binary(data) -> data
+        :eof -> _previous_behavior = ""
+        other -> raise "reading from #{inspect(device)} failed: #{inspect(other)}"
+      end
+    end
+  else
+    defp binread_all!(device) do
+      case IO.binread(device, :all) do
+        data when is_binary(data) -> data
+        other -> raise "reading from #{inspect(device)} failed: #{inspect(other)}"
+      end
+    end
   end
 end

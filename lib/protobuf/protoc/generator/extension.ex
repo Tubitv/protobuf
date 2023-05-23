@@ -1,67 +1,90 @@
 defmodule Protobuf.Protoc.Generator.Extension do
   @moduledoc false
+
+  alias Protobuf.Protoc.Context
   alias Protobuf.Protoc.Generator.Util
+
+  require EEx
+
+  @opaque extension() ::
+            {namespace :: [String.t(), ...],
+             [ext_field :: Google.Protobuf.FieldDescriptorProto.t()]}
 
   @ext_postfix "PbExtension"
 
-  def generate(%{namespace: ns} = ctx, desc, nested_extensions) do
-    extends = Enum.map(desc.extension, fn ext -> generate_extend(ctx, ext) end)
+  EEx.function_from_file(
+    :defp,
+    :extension_template,
+    Path.expand("./templates/extension.ex.eex", :code.priv_dir(:protobuf)),
+    [:assigns]
+  )
+
+  @spec generate(Context.t(), Google.Protobuf.FileDescriptorProto.t(), [extension()]) ::
+          nil | {module_name :: String.t(), file_contents :: String.t()}
+  def generate(
+        %Context{namespace: ns} = ctx,
+        %Google.Protobuf.FileDescriptorProto{} = desc,
+        nested_extensions
+      )
+      when is_list(nested_extensions) do
+    extends = Enum.map(desc.extension, &generate_extend(ctx, &1, _ns = ""))
 
     nested_extends =
-      Enum.map(nested_extensions, fn {ns, exts} ->
-        ns = Util.join_name(ns)
-
-        Enum.map(exts, fn ext ->
-          generate_extend(ctx, ext, ns)
-        end)
+      Enum.flat_map(nested_extensions, fn {ns, exts} ->
+        ns = Enum.join(ns, ".")
+        Enum.map(exts, &generate_extend(ctx, &1, ns))
       end)
-      |> Enum.concat()
 
-    extends = extends ++ nested_extends
+    case extends ++ nested_extends do
+      [] ->
+        nil
 
-    if Enum.empty?(extends) do
-      ""
-    else
-      name = Util.trans_name(@ext_postfix)
-      msg_name = Util.mod_name(ctx, ns ++ [name])
-      Protobuf.Protoc.Template.extension(msg_name, msg_opts(ctx, desc), extends)
+      extends ->
+        msg_name = Util.mod_name(ctx, ns ++ [Macro.camelize(@ext_postfix)])
+
+        use_options =
+          Util.options_to_str(%{
+            syntax: ctx.syntax,
+            protoc_gen_elixir_version: "\"#{Util.version()}\""
+          })
+
+        {msg_name,
+         Util.format(
+           extension_template(module: msg_name, use_options: use_options, extends: extends)
+         )}
     end
   end
 
-  def generate_extend(ctx, f, ns \\ "") do
+  defp generate_extend(ctx, f, ns) do
     extendee = Util.type_from_type_name(ctx, f.extendee)
-    f = Protobuf.Protoc.Generator.Message.get_field(ctx, f, %{}, [])
-    label_str = "#{f.label}: true, "
+    f = Protobuf.Protoc.Generator.Message.get_field(ctx, f)
 
     name =
       if ns == "" do
         f.name
       else
-        inspect(Util.join_name([ns, f.name]))
+        inspect("#{ns}.#{f.name}")
       end
 
-    "#{extendee}, :#{name}, #{f.number}, #{label_str}type: #{f.type}#{f.opts_str}"
+    "#{extendee}, :#{name}, #{f.number}, #{f.label}: true, type: #{f.type}#{f.opts_str}"
   end
 
-  defp msg_opts(%{syntax: syntax}, _desc) do
-    opts = %{syntax: syntax}
-    str = Util.options_to_str(opts)
-    ", " <> str
+  @spec get_nested_extensions(Context.t(), [Google.Protobuf.DescriptorProto.t()]) :: [extension()]
+  def get_nested_extensions(%Context{} = ctx, descs) when is_list(descs) do
+    get_nested_extensions(ctx.namespace, descs, _acc = [])
   end
 
-  def get_nested_extensions(%{namespace: ns} = ctx, msgs, acc0 \\ []) do
-    msgs
-    |> Enum.filter(fn m -> !Enum.empty?(m.extension) end)
-    |> Enum.reduce(acc0, fn m, acc ->
-      new_ns = ns ++ [Util.trans_name(m.name)]
-      extension = {new_ns, m.extension}
-      acc = [extension | acc]
+  defp get_nested_extensions(_ns, _descs = [], acc) do
+    Enum.reverse(acc)
+  end
 
-      if m.nested_type == [] do
-        acc
-      else
-        get_nested_extensions(%{ctx | namespace: new_ns}, m.nested_type, acc)
-      end
+  defp get_nested_extensions(ns, descs, acc) do
+    descs
+    |> Enum.reject(&(&1.extension == []))
+    |> Enum.reduce(acc, fn desc, acc ->
+      new_ns = ns ++ [Macro.camelize(desc.name)]
+      acc = [_extension = {new_ns, desc.extension} | acc]
+      get_nested_extensions(new_ns, desc.nested_type, acc)
     end)
   end
 end

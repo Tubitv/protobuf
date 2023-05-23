@@ -1,24 +1,29 @@
 defmodule Protobuf.DSLTest do
   use ExUnit.Case, async: true
 
-  alias Protobuf.FieldProps
-  alias TestMsg.{Foo, Foo2}
+  import ExUnit.CaptureIO
 
-  defmodule DefaultSyntax do
-    use Protobuf
-  end
+  alias Protobuf.{FieldProps, MessageProps}
+  alias TestMsg.{Foo, Foo2, Proto3Optional}
 
   test "default syntax is proto2" do
-    assert DefaultSyntax.__message_props__().syntax == :proto2
+    defmodule DefaultSyntax do
+      use Protobuf
+    end
+
+    assert %MessageProps{syntax: :proto2} = DefaultSyntax.__message_props__()
   end
 
   test "supports syntax option" do
-    msg_props = TestMsg.SyntaxOption.__message_props__()
-    assert msg_props.syntax == :proto3
+    defmodule Proto3Syntax do
+      use Protobuf, syntax: :proto3
+    end
+
+    assert %MessageProps{syntax: :proto3} = Proto3Syntax.__message_props__()
   end
 
-  test "creates __message_props__ function" do
-    msg_props = Foo.__message_props__()
+  test "creates __message_props__/0 function" do
+    assert %MessageProps{} = msg_props = Foo.__message_props__()
 
     tags_map =
       Enum.reduce([1, 2, 3] ++ Enum.to_list(5..17) ++ [101], %{}, fn i, acc ->
@@ -115,6 +120,12 @@ defmodule Protobuf.DSLTest do
     assert %FieldProps{fnum: 8, name: "g", repeated?: true, packed?: false} = field_props[8]
   end
 
+  test "proto3_optional? is false by default for proto3" do
+    msg_props = Proto3Optional.__message_props__()
+    field_props = msg_props.field_props
+    assert %FieldProps{fnum: 2, name: "b", proto3_optional?: false} = field_props[2]
+  end
+
   test "packed? is false by default for proto2" do
     msg_props = Foo2.__message_props__()
     field_props = msg_props.field_props
@@ -151,18 +162,20 @@ defmodule Protobuf.DSLTest do
     assert TestMsg.EnumFoo.key(1) == :A
     assert TestMsg.EnumFoo.key(2) == :B
     assert TestMsg.EnumFoo.key(4) == :C
-    assert_raise FunctionClauseError, fn -> TestMsg.EnumFoo.key(5) end
+    assert TestMsg.EnumFoo.key(213_123) == 213_123
     assert TestMsg.EnumFoo.mapping() == %{UNKNOWN: 0, A: 1, B: 2, C: 4, D: 4, E: 4}
 
     assert TestMsg.EnumFoo.__reverse_mapping__() == %{
              0 => :UNKNOWN,
              1 => :A,
              2 => :B,
-             4 => :C,
+             4 => :E,
              "A" => :A,
              "B" => :B,
              "C" => :C,
-             "UNKNOWN" => :UNKNOWN
+             "UNKNOWN" => :UNKNOWN,
+             "D" => :D,
+             "E" => :E
            }
 
     assert %FieldProps{fnum: 11, type: {:enum, TestMsg.EnumFoo}, wire_type: 0} =
@@ -173,28 +186,6 @@ defmodule Protobuf.DSLTest do
     msg_props = Foo.__message_props__()
     assert msg_props.field_props[11].wire_type == 0
     refute msg_props.field_props[11].embedded?
-  end
-
-  test "generates __default_struct__ function" do
-    assert %Foo{
-             a: 0,
-             b: 0,
-             c: "",
-             d: 0.0,
-             e: nil,
-             f: 0,
-             g: [],
-             h: [],
-             i: [],
-             j: :UNKNOWN,
-             k: false,
-             l: %{},
-             m: :UNKNOWN,
-             n: 0.0,
-             o: [],
-             p: "",
-             non_matched: ""
-           } == Foo.__default_struct__()
   end
 
   test "generates new function" do
@@ -241,5 +232,90 @@ defmodule Protobuf.DSLTest do
   test "creates transform_module/1 function" do
     assert TestMsg.Foo.transform_module() == nil
     assert TestMsg.WithTransformModule.transform_module() == TestMsg.TransformModule
+  end
+
+  test "emits a warning if there is already a definition for the t/0 type for an enum" do
+    output =
+      capture_io(:stderr, fn ->
+        Code.eval_quoted(
+          quote do
+            defmodule MessageWithWarning do
+              use Protobuf, syntax: :proto3, enum: true
+
+              @type t() :: integer() | :FOO
+
+              field :FOO, 0, type: :bool
+            end
+          end
+        )
+      end)
+
+    assert output =~ "the t/0 type in Protobuf enum modules is automatically generated"
+  end
+
+  test "emits a warning if there is already a call to defstruct/1 and a definition for the t/0 type" do
+    output =
+      capture_io(:stderr, fn ->
+        Code.eval_quoted(
+          quote do
+            defmodule MessageWithWarning do
+              use Protobuf, syntax: :proto3
+
+              @type t() :: %__MODULE__{foo: boolean()}
+
+              defstruct [:foo]
+
+              field :foo, 1, type: :bool
+            end
+          end
+        )
+      end)
+
+    assert output =~ "t/0 type and the struct are automatically generated"
+  end
+
+  test "raises a compilation error if there is already a call to defstruct/1 but no definition for the t/0 type" do
+    assert_raise RuntimeError, ~r{t/0 type and the struct are automatically generated}, fn ->
+      Code.eval_quoted(
+        quote do
+          defmodule MessageWithDefstructError do
+            use Protobuf, syntax: :proto3
+
+            defstruct [:foo]
+
+            field :foo, 1, type: :bool
+          end
+        end
+      )
+    end
+  end
+
+  test "raises a compilation error if there is already a definition for the t/0 type but no defstruct" do
+    assert_raise RuntimeError, ~r{the t/0 type and the struct are automatically generated}, fn ->
+      Code.eval_quoted(
+        quote do
+          defmodule MessageWithTTypeError do
+            use Protobuf, syntax: :proto3
+
+            @type t() :: %__MODULE__{foo: boolean()}
+
+            field :foo, 1, type: :bool
+          end
+        end
+      )
+    end
+  end
+
+  test "raises a compilation error if syntax is proto3 and the first enum has tag other than 0" do
+    assert_raise RuntimeError, "the first enum value must have tag 0 in proto3, got: 1", fn ->
+      Code.eval_quoted(
+        quote do
+          defmodule MessageWithProto3BadEnumTag do
+            use Protobuf, syntax: :proto3, enum: true
+            field :NOT_ZERO, 1
+          end
+        end
+      )
+    end
   end
 end

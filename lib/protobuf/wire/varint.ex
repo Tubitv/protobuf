@@ -20,7 +20,7 @@ defmodule Protobuf.Wire.Varint do
 
         defp decode_all(<<>>, acc), do: acc
 
-        decoder :defp, :decode_all, [:acc] do
+        defdecoderp decode_all(acc) do
           decode_all(rest, [value | acc])
         end
       end
@@ -43,7 +43,7 @@ defmodule Protobuf.Wire.Varint do
       iex> Protobuf.Wire.Varint.encode(1_234_567)
       [<<135>>, <<173>>, 75]
   """
-  use Bitwise
+  import Bitwise
 
   @max_bits 64
   @mask64 bsl(1, @max_bits) - 1
@@ -138,7 +138,7 @@ defmodule Protobuf.Wire.Varint do
           x6::7, 1::1, x7::7, 1::1, x8::7, 0::1, x9::7>>
       end,
       quote(generated: true) do
-        band(
+        v =
           x0 +
             bsl(x1, 7) +
             bsl(x2, 14) +
@@ -148,48 +148,42 @@ defmodule Protobuf.Wire.Varint do
             bsl(x6, 42) +
             bsl(x7, 49) +
             bsl(x8, 56) +
-            bsl(x9, 63),
-          unquote(@mask64)
-        )
+            bsl(x9, 63)
+
+        _ = band(v, unquote(@mask64))
       end
     }
   ]
 
-  defmacro decoder(kind, name, args \\ [], do: block) do
-    def_success(kind, name, args, block) ++ [def_failure(kind, name, args)]
+  defmacro defdecoderp(name_and_args, do: body) do
+    {name, args} = Macro.decompose_call(name_and_args)
+
+    def_decoder_success_clauses(name, args, body) ++ [def_decoder_failure_clause(name, args)]
   end
 
-  defp def_success(kind, name, args, block) do
-    args = Enum.map(args, fn arg -> {arg, [line: 1], nil} end)
-
+  defp def_decoder_success_clauses(name, args, body) do
     for {pattern, expression} <- @varints do
-      head = quote(do: unquote(name)(<<unquote(pattern), rest::bits>>, unquote_splicing(args)))
-
-      body =
-        quote do
+      quote do
+        defp unquote(name)(<<unquote(pattern), rest::bits>>, unquote_splicing(args)) do
           var!(value) = unquote(expression)
           var!(rest) = rest
-          unquote(block)
-        end
-
-      quote do
-        case unquote(kind) do
-          :def -> def unquote(head), do: unquote(body)
-          :defp -> defp unquote(head), do: unquote(body)
+          unquote(body)
         end
       end
     end
   end
 
-  defp def_failure(kind, name, args) do
-    args = Enum.map(args, fn _ -> {:_, [line: 1], nil} end)
-    head = quote(do: unquote(name)(<<_::bits>>, unquote_splicing(args)))
-    body = quote(do: raise(Protobuf.DecodeError, message: "cannot decode binary data"))
+  defp def_decoder_failure_clause(name, args) do
+    args =
+      Enum.map(args, fn
+        {:_, _meta, _ctxt} = underscore -> underscore
+        {name, meta, ctxt} when is_atom(name) and is_atom(ctxt) -> {:"_#{name}", meta, ctxt}
+        other -> other
+      end)
 
     quote do
-      case unquote(kind) do
-        :def -> def unquote(head), do: unquote(body)
-        :defp -> defp unquote(head), do: unquote(body)
+      defp unquote(name)(<<_::bits>>, unquote_splicing(args)) do
+        raise Protobuf.DecodeError, message: "cannot decode binary data"
       end
     end
   end

@@ -1,22 +1,11 @@
 defmodule Benchmarks.GoogleMessage3.Message11018 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{}
-  defstruct []
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 end
 
 defmodule Benchmarks.GoogleMessage3.Message10800 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field10808: String.t(),
-          field10809: integer,
-          field10810: boolean,
-          field10811: float | :infinity | :negative_infinity | :nan
-        }
-  defstruct [:field10808, :field10809, :field10810, :field10811]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field10808, 1, optional: true, type: :string
   field :field10809, 2, optional: true, type: :int64
@@ -26,23 +15,12 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message10802 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{}
-  defstruct []
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 end
 
 defmodule Benchmarks.GoogleMessage3.Message10748 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field10750: String.t(),
-          field10751: integer,
-          field10752: integer,
-          field10753: integer
-        }
-  defstruct [:field10750, :field10751, :field10752, :field10753]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field10750, 1, optional: true, type: :string
   field :field10751, 2, optional: true, type: :int32
@@ -52,13 +30,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message7966 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field7969: String.t(),
-          field7970: boolean
-        }
-  defstruct [:field7969, :field7970]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field7969, 1, optional: true, type: :string
   field :field7970, 2, optional: true, type: :bool
@@ -66,17 +38,7 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message708 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field823: Benchmarks.GoogleMessage3.Message741.t() | nil,
-          field824: [String.t()],
-          field825: String.t(),
-          field826: String.t(),
-          field827: [String.t()],
-          field828: [String.t()]
-        }
-  defstruct [:field823, :field824, :field825, :field826, :field827, :field828]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field823, 1, optional: true, type: Benchmarks.GoogleMessage3.Message741
   field :field824, 6, repeated: true, type: :string
@@ -88,21 +50,12 @@ end
 
 defmodule Benchmarks.GoogleMessage3.Message8942 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{}
-  defstruct []
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 end
 
 defmodule Benchmarks.GoogleMessage3.Message11011 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field11752: binary,
-          field11753: binary
-        }
-  defstruct [:field11752, :field11753]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field11752, 1, required: true, type: :bytes
   field :field11753, 2, required: true, type: :bytes
@@ -110,20 +63,12 @@ end
 
 defmodule Benchmarks.GoogleMessage3.UnusedEmptyMessage do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{}
-  defstruct []
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 end
 
 defmodule Benchmarks.GoogleMessage3.Message741 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field936: [String.t()]
-        }
-  defstruct [:field936]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field936, 1, repeated: true, type: :string
 end

@@ -1,20 +1,13 @@
 defmodule Elixirpb.FileOptions do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          module_prefix: String.t()
-        }
-
-  defstruct [:module_prefix]
+  use Protobuf, protoc_gen_elixir_version: "0.11.0", syntax: :proto2
 
   field :module_prefix, 1, optional: true, type: :string
-
-  def transform_module(), do: nil
 end
 
 defmodule Elixirpb.PbExtension do
   @moduledoc false
-  use Protobuf, syntax: :proto2
+  use Protobuf, protoc_gen_elixir_version: "0.11.0", syntax: :proto2
+
   extend Google.Protobuf.FileOptions, :file, 1047, optional: true, type: Elixirpb.FileOptions
 end

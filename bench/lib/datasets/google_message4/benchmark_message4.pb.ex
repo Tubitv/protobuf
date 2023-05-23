@@ -1,43 +1,6 @@
 defmodule Benchmarks.GoogleMessage4.GoogleMessage4 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37503: integer,
-          field37504: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37505: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37506: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37507: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37508: Benchmarks.GoogleMessage4.Message37489.t() | nil,
-          field37509: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37510: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37511: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37512: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37513: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37514: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37515: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37516: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37517: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37518: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [
-    :field37503,
-    :field37504,
-    :field37505,
-    :field37506,
-    :field37507,
-    :field37508,
-    :field37509,
-    :field37510,
-    :field37511,
-    :field37512,
-    :field37513,
-    :field37514,
-    :field37515,
-    :field37516,
-    :field37517,
-    :field37518
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37503, 1, optional: true, type: :int32
   field :field37504, 2, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
@@ -59,54 +22,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37489 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37534: Benchmarks.GoogleMessage4.Message2517.t() | nil,
-          field37535: Benchmarks.GoogleMessage4.Message7330.t() | nil,
-          field37536: Benchmarks.GoogleMessage4.Message8815.t() | nil,
-          field37537: Benchmarks.GoogleMessage4.Message8817.t() | nil,
-          field37538: Benchmarks.GoogleMessage4.Message8835.t() | nil,
-          field37539: Benchmarks.GoogleMessage4.Message8848.t() | nil,
-          field37540: Benchmarks.GoogleMessage4.Message8856.t() | nil,
-          field37541: Benchmarks.GoogleMessage4.Message12717.t() | nil,
-          field37542: Benchmarks.GoogleMessage4.Message12748.t() | nil,
-          field37543: Benchmarks.GoogleMessage4.Message7319.t() | nil,
-          field37544: Benchmarks.GoogleMessage4.Message12908.t() | nil,
-          field37545: Benchmarks.GoogleMessage4.Message12910.t() | nil,
-          field37546: Benchmarks.GoogleMessage4.Message12960.t() | nil,
-          field37547: Benchmarks.GoogleMessage4.Message176.t() | nil,
-          field37548: Benchmarks.GoogleMessage4.Message13000.t() | nil,
-          field37549: Benchmarks.GoogleMessage4.Message13035.t() | nil,
-          field37550: Benchmarks.GoogleMessage4.Message37331.t() | nil,
-          field37551: Benchmarks.GoogleMessage4.Message37329.t() | nil,
-          field37552: Benchmarks.GoogleMessage4.Message37327.t() | nil,
-          field37553: Benchmarks.GoogleMessage4.Message37333.t() | nil,
-          field37554: Benchmarks.GoogleMessage4.Message37335.t() | nil
-        }
-  defstruct [
-    :field37534,
-    :field37535,
-    :field37536,
-    :field37537,
-    :field37538,
-    :field37539,
-    :field37540,
-    :field37541,
-    :field37542,
-    :field37543,
-    :field37544,
-    :field37545,
-    :field37546,
-    :field37547,
-    :field37548,
-    :field37549,
-    :field37550,
-    :field37551,
-    :field37552,
-    :field37553,
-    :field37554
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37534, 3, optional: true, type: Benchmarks.GoogleMessage4.Message2517
   field :field37535, 4, optional: true, type: Benchmarks.GoogleMessage4.Message7330
@@ -133,13 +49,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message7319 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field7321: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field7322: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [:field7321, :field7322]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field7321, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field7322, 7, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
@@ -147,30 +57,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12717 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12719: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field12720: String.t(),
-          field12721: non_neg_integer,
-          field12722: Benchmarks.GoogleMessage4.Message11976.t() | nil,
-          field12723: [Benchmarks.GoogleMessage4.Message11948.t()],
-          field12724: Benchmarks.GoogleMessage4.Message11947.t() | nil,
-          field12725: Benchmarks.GoogleMessage4.Message12687.t() | nil,
-          field12726: [Benchmarks.GoogleMessage4.Message11948.t()],
-          field12727: integer
-        }
-  defstruct [
-    :field12719,
-    :field12720,
-    :field12721,
-    :field12722,
-    :field12723,
-    :field12724,
-    :field12725,
-    :field12726,
-    :field12727
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12719, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field12720, 2, optional: true, type: :string
@@ -185,15 +72,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37331 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37367: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37368: Benchmarks.GoogleMessage4.Message37326.t() | nil,
-          field37369: integer,
-          field37370: binary
-        }
-  defstruct [:field37367, :field37368, :field37369, :field37370]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37367, 4, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field37368, 1, required: true, type: Benchmarks.GoogleMessage4.Message37326
@@ -203,14 +82,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message8815 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field8819: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field8820: [Benchmarks.GoogleMessage4.Message8768.t()],
-          field8821: boolean
-        }
-  defstruct [:field8819, :field8820, :field8821]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field8819, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field8820, 2, repeated: true, type: Benchmarks.GoogleMessage4.Message8768
@@ -219,17 +91,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message7330 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field7332: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field7333: Benchmarks.GoogleMessage4.Message3069.t() | nil,
-          field7334: Benchmarks.GoogleMessage4.Message7320.t() | nil,
-          field7335: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field7336: boolean,
-          field7337: integer
-        }
-  defstruct [:field7332, :field7333, :field7334, :field7335, :field7336, :field7337]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field7332, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field7333, 2, optional: true, type: Benchmarks.GoogleMessage4.Message3069
@@ -241,13 +103,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12960 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12962: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field12963: Benchmarks.GoogleMessage4.Message12948.t() | nil
-        }
-  defstruct [:field12962, :field12963]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12962, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field12963, 2, optional: true, type: Benchmarks.GoogleMessage4.Message12948
@@ -255,138 +111,12 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message176.Message178 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{}
-  defstruct []
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 end
 
 defmodule Benchmarks.GoogleMessage4.Message176 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field408: String.t(),
-          field409: integer,
-          field410: String.t(),
-          field411: integer,
-          field412: non_neg_integer,
-          field413: String.t(),
-          field414: integer,
-          field415: String.t(),
-          field416: binary,
-          field417: String.t(),
-          field418: integer,
-          field419: float | :infinity | :negative_infinity | :nan,
-          field420: boolean,
-          field421: boolean,
-          field422: integer,
-          field423: [integer],
-          field424: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field425: boolean,
-          field426: non_neg_integer,
-          field427: integer,
-          field428: binary,
-          field429: binary,
-          field430: binary,
-          field431: binary,
-          field432: boolean,
-          field433: binary,
-          field434: binary,
-          field435: integer,
-          field436: non_neg_integer,
-          field437: integer,
-          field438: non_neg_integer,
-          field439: String.t(),
-          field440: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field441: integer,
-          field442: non_neg_integer,
-          field443: binary,
-          field444: binary,
-          field445: binary,
-          field446: String.t(),
-          field447: String.t(),
-          field448: integer,
-          field449: boolean,
-          field450: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field451: [Benchmarks.GoogleMessage4.UnusedEmptyMessage.t()],
-          field452: Benchmarks.GoogleMessage4.UnusedEnum.t(),
-          field453: integer,
-          field454: integer,
-          field455: Benchmarks.GoogleMessage4.UnusedEnum.t(),
-          field456: Benchmarks.GoogleMessage4.UnusedEnum.t(),
-          field457: integer,
-          message178: [any],
-          field459: boolean,
-          field460: non_neg_integer,
-          field461: non_neg_integer,
-          field462: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field463: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field464: Benchmarks.GoogleMessage4.UnusedEnum.t(),
-          field465: [String.t()],
-          field466: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [
-    :field408,
-    :field409,
-    :field410,
-    :field411,
-    :field412,
-    :field413,
-    :field414,
-    :field415,
-    :field416,
-    :field417,
-    :field418,
-    :field419,
-    :field420,
-    :field421,
-    :field422,
-    :field423,
-    :field424,
-    :field425,
-    :field426,
-    :field427,
-    :field428,
-    :field429,
-    :field430,
-    :field431,
-    :field432,
-    :field433,
-    :field434,
-    :field435,
-    :field436,
-    :field437,
-    :field438,
-    :field439,
-    :field440,
-    :field441,
-    :field442,
-    :field443,
-    :field444,
-    :field445,
-    :field446,
-    :field447,
-    :field448,
-    :field449,
-    :field450,
-    :field451,
-    :field452,
-    :field453,
-    :field454,
-    :field455,
-    :field456,
-    :field457,
-    :message178,
-    :field459,
-    :field460,
-    :field461,
-    :field462,
-    :field463,
-    :field464,
-    :field465,
-    :field466
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field408, 1, required: true, type: :string
   field :field409, 4, optional: true, type: :int32
@@ -451,14 +181,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message8817 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field8825: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field8826: [Benchmarks.GoogleMessage4.Message8768.t()],
-          field8827: String.t()
-        }
-  defstruct [:field8825, :field8826, :field8827]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field8825, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field8826, 2, repeated: true, type: Benchmarks.GoogleMessage4.Message8768
@@ -467,14 +190,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message8835 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field8837: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field8838: [String.t()],
-          field8839: Benchmarks.GoogleMessage4.UnusedEnum.t()
-        }
-  defstruct [:field8837, :field8838, :field8839]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field8837, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field8838, 2, repeated: true, type: :string
@@ -483,14 +199,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37333 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37372: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37373: Benchmarks.GoogleMessage4.Message37326.t() | nil,
-          field37374: non_neg_integer
-        }
-  defstruct [:field37372, :field37373, :field37374]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37372, 3, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field37373, 1, required: true, type: Benchmarks.GoogleMessage4.Message37326
@@ -499,13 +208,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message13000 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field13015: integer,
-          field13016: [Benchmarks.GoogleMessage4.Message12979.t()]
-        }
-  defstruct [:field13015, :field13016]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field13015, 1, optional: true, type: :int64
   field :field13016, 2, repeated: true, type: Benchmarks.GoogleMessage4.Message12979
@@ -513,15 +216,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37335 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37376: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37377: Benchmarks.GoogleMessage4.Message37326.t() | nil,
-          field37378: Benchmarks.GoogleMessage4.Message37173.t() | nil,
-          field37379: non_neg_integer
-        }
-  defstruct [:field37376, :field37377, :field37378, :field37379]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37376, 4, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field37377, 1, required: true, type: Benchmarks.GoogleMessage4.Message37326
@@ -531,14 +226,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message8848 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field8850: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field8851: String.t(),
-          field8852: binary
-        }
-  defstruct [:field8850, :field8851, :field8852]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field8850, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field8851, 2, optional: true, type: :string
@@ -547,13 +235,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message13035 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field13058: integer,
-          field13059: [integer]
-        }
-  defstruct [:field13058, :field13059]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field13058, 1, optional: true, type: :int64
   field :field13059, 2, repeated: true, type: :int64
@@ -561,13 +243,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message8856 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field8858: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field8859: String.t()
-        }
-  defstruct [:field8858, :field8859]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field8858, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field8859, 2, optional: true, type: :string
@@ -575,17 +251,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12908 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12912: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field12913: String.t(),
-          field12914: Benchmarks.GoogleMessage4.Message12799.t() | nil,
-          field12915: integer,
-          field12916: Benchmarks.GoogleMessage4.Message3804.t() | nil,
-          field12917: Benchmarks.GoogleMessage4.Message12870.t() | nil
-        }
-  defstruct [:field12912, :field12913, :field12914, :field12915, :field12916, :field12917]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12912, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field12913, 2, optional: true, type: :string
@@ -597,14 +263,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12910 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12920: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field12921: Benchmarks.GoogleMessage4.Message12818.t() | nil,
-          field12922: [Benchmarks.GoogleMessage4.Message12903.t()]
-        }
-  defstruct [:field12920, :field12921, :field12922]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12920, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field12921, 2, optional: true, type: Benchmarks.GoogleMessage4.Message12818
@@ -613,34 +272,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37327 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37347: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37348: Benchmarks.GoogleMessage4.Message37326.t() | nil,
-          field37349: boolean,
-          field37350: boolean,
-          field37351: boolean,
-          field37352: boolean,
-          field37353: boolean,
-          field37354: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37355: non_neg_integer,
-          field37356: boolean,
-          field37357: boolean
-        }
-  defstruct [
-    :field37347,
-    :field37348,
-    :field37349,
-    :field37350,
-    :field37351,
-    :field37352,
-    :field37353,
-    :field37354,
-    :field37355,
-    :field37356,
-    :field37357
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37347, 11, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field37348, 1, required: true, type: Benchmarks.GoogleMessage4.Message37326
@@ -657,16 +289,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37329 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37359: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37360: Benchmarks.GoogleMessage4.Message37326.t() | nil,
-          field37361: integer,
-          field37362: integer,
-          field37363: boolean
-        }
-  defstruct [:field37359, :field37360, :field37361, :field37362, :field37363]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37359, 6, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field37360, 1, required: true, type: Benchmarks.GoogleMessage4.Message37326
@@ -677,16 +300,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message2517 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field2519: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field2520: Benchmarks.GoogleMessage4.Message2356.t() | nil,
-          field2521: Benchmarks.GoogleMessage4.Message0.t() | nil,
-          field2522: Benchmarks.GoogleMessage4.Message2463.t() | nil,
-          field2523: [Benchmarks.GoogleMessage4.Message971.t()]
-        }
-  defstruct [:field2519, :field2520, :field2521, :field2522, :field2523]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field2519, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field2520, 2, optional: true, type: Benchmarks.GoogleMessage4.Message2356
@@ -697,15 +311,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12748 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12754: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field12755: String.t(),
-          field12756: String.t(),
-          field12757: Benchmarks.GoogleMessage4.Enum12735.t()
-        }
-  defstruct [:field12754, :field12755, :field12756, :field12757]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12754, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field12755, 2, optional: true, type: :string
@@ -715,26 +321,14 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12687 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12701: [Benchmarks.GoogleMessage4.Message12686.t()]
-        }
-  defstruct [:field12701]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12701, 1, repeated: true, type: Benchmarks.GoogleMessage4.Message12686
 end
 
 defmodule Benchmarks.GoogleMessage4.Message11948 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field11954: String.t(),
-          field11955: [Benchmarks.GoogleMessage4.Message11949.t()],
-          field11956: boolean
-        }
-  defstruct [:field11954, :field11955, :field11956]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field11954, 1, optional: true, type: :string
   field :field11955, 2, repeated: true, type: Benchmarks.GoogleMessage4.Message11949
@@ -743,25 +337,14 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message11976 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12002: [Benchmarks.GoogleMessage4.Message11975.t()]
-        }
-  defstruct [:field12002]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12002, 1, repeated: true, type: Benchmarks.GoogleMessage4.Message11975
 end
 
 defmodule Benchmarks.GoogleMessage4.Message7320 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field7323: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field7324: Benchmarks.GoogleMessage4.Message7287.t() | nil
-        }
-  defstruct [:field7323, :field7324]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field7323, 1, optional: true, type: Benchmarks.GoogleMessage4.UnusedEmptyMessage
   field :field7324, 8, optional: true, type: Benchmarks.GoogleMessage4.Message7287
@@ -769,13 +352,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message3069.Message3070 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field3378: Benchmarks.GoogleMessage4.Enum3071.t(),
-          field3379: binary
-        }
-  defstruct [:field3378, :field3379]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field3378, 4, required: true, type: Benchmarks.GoogleMessage4.Enum3071, enum: true
   field :field3379, 5, required: true, type: :bytes
@@ -783,15 +360,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message3069 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field3374: Benchmarks.GoogleMessage4.Message3061.t() | nil,
-          field3375: binary,
-          message3070: [any],
-          __pb_extensions__: map
-        }
-  defstruct [:field3374, :field3375, :message3070, :__pb_extensions__]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field3374, 1, optional: true, type: Benchmarks.GoogleMessage4.Message3061
   field :field3375, 2, optional: true, type: :bytes
@@ -802,30 +371,14 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12948 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12958: [Benchmarks.GoogleMessage4.Message12949.t()]
-        }
-  defstruct [:field12958]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12958, 1, repeated: true, type: Benchmarks.GoogleMessage4.Message12949
 end
 
 defmodule Benchmarks.GoogleMessage4.Message8768 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field8782: String.t(),
-          field8783: Benchmarks.GoogleMessage4.Message8572.t() | nil,
-          field8784: boolean,
-          field8785: [Benchmarks.GoogleMessage4.Message8774.t()],
-          field8786: integer,
-          field8787: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field8788: String.t()
-        }
-  defstruct [:field8782, :field8783, :field8784, :field8785, :field8786, :field8787, :field8788]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field8782, 1, optional: true, type: :string
   field :field8783, 2, optional: true, type: Benchmarks.GoogleMessage4.Message8572
@@ -838,26 +391,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12979 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12981: binary,
-          field12982: [String.t()],
-          field12983: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field12984: integer,
-          field12985: String.t(),
-          field12986: integer,
-          field12987: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil
-        }
-  defstruct [
-    :field12981,
-    :field12982,
-    :field12983,
-    :field12984,
-    :field12985,
-    :field12986,
-    :field12987
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12981, 1, required: true, type: :bytes
   field :field12982, 2, repeated: true, type: :string
@@ -870,62 +404,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37173 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37252: String.t(),
-          field37253: integer,
-          field37254: Benchmarks.GoogleMessage4.UnusedEnum.t(),
-          field37255: boolean,
-          field37256: boolean,
-          field37257: boolean,
-          field37258: String.t(),
-          field37259: String.t(),
-          field37260: non_neg_integer,
-          field37261: non_neg_integer,
-          field37262: String.t(),
-          field37263: String.t(),
-          field37264: String.t(),
-          field37265: integer,
-          field37266: integer,
-          field37267: integer,
-          field37268: integer,
-          field37269: integer,
-          field37270: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37271: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37272: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37273: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37274: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field37275: String.t(),
-          field37276: boolean
-        }
-  defstruct [
-    :field37252,
-    :field37253,
-    :field37254,
-    :field37255,
-    :field37256,
-    :field37257,
-    :field37258,
-    :field37259,
-    :field37260,
-    :field37261,
-    :field37262,
-    :field37263,
-    :field37264,
-    :field37265,
-    :field37266,
-    :field37267,
-    :field37268,
-    :field37269,
-    :field37270,
-    :field37271,
-    :field37272,
-    :field37273,
-    :field37274,
-    :field37275,
-    :field37276
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37252, 1, optional: true, type: :string
   field :field37253, 2, optional: true, type: :int64
@@ -956,28 +435,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12799 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12809: String.t(),
-          field12810: [non_neg_integer],
-          field12811: [Benchmarks.GoogleMessage4.Message12776.t()],
-          field12812: [integer],
-          field12813: [Benchmarks.GoogleMessage4.Message12798.t()],
-          field12814: integer,
-          field12815: integer,
-          field12816: Benchmarks.GoogleMessage4.Message12797.t() | nil
-        }
-  defstruct [
-    :field12809,
-    :field12810,
-    :field12811,
-    :field12812,
-    :field12813,
-    :field12814,
-    :field12815,
-    :field12816
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12809, 1, required: true, type: :string
   field :field12810, 2, repeated: true, type: :fixed64
@@ -991,52 +449,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12870 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12879: integer,
-          field12880: integer,
-          field12881: integer,
-          field12882: non_neg_integer,
-          field12883: String.t(),
-          field12884: non_neg_integer,
-          field12885: [non_neg_integer],
-          field12886: integer,
-          field12887: integer,
-          field12888: [Benchmarks.GoogleMessage4.Message12870.t()],
-          field12889: integer,
-          field12890: non_neg_integer,
-          field12891: integer,
-          field12892: integer,
-          field12893: float | :infinity | :negative_infinity | :nan,
-          field12894: Benchmarks.GoogleMessage4.Message12825.t() | nil,
-          field12895: float | :infinity | :negative_infinity | :nan,
-          field12896: String.t(),
-          field12897: Benchmarks.GoogleMessage4.Enum12871.t(),
-          field12898: integer
-        }
-  defstruct [
-    :field12879,
-    :field12880,
-    :field12881,
-    :field12882,
-    :field12883,
-    :field12884,
-    :field12885,
-    :field12886,
-    :field12887,
-    :field12888,
-    :field12889,
-    :field12890,
-    :field12891,
-    :field12892,
-    :field12893,
-    :field12894,
-    :field12895,
-    :field12896,
-    :field12897,
-    :field12898
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12879, 1, required: true, type: :int32
   field :field12880, 7, optional: true, type: :int32
@@ -1062,18 +475,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message3804 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field3818: integer,
-          field3819: boolean,
-          field3820: [[Benchmarks.GoogleMessage4.Enum3805.t()]],
-          field3821: integer,
-          field3822: boolean,
-          field3823: integer,
-          field3824: Benchmarks.GoogleMessage4.Enum3783.t()
-        }
-  defstruct [:field3818, :field3819, :field3820, :field3821, :field3822, :field3823, :field3824]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field3818, 1, required: true, type: :int64
   field :field3819, 2, required: true, type: :bool
@@ -1086,14 +488,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message12903 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field12905: String.t(),
-          field12906: Benchmarks.GoogleMessage4.Message8587.t() | nil,
-          field12907: [Benchmarks.GoogleMessage4.Message8590.t()]
-        }
-  defstruct [:field12905, :field12906, :field12907]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field12905, 1, optional: true, type: :string
   field :field12906, 2, optional: true, type: Benchmarks.GoogleMessage4.Message8587
@@ -1102,13 +497,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message37326 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field37345: String.t(),
-          field37346: String.t()
-        }
-  defstruct [:field37345, :field37346]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field37345, 1, required: true, type: :string
   field :field37346, 2, optional: true, type: :string
@@ -1116,36 +505,7 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message2356.Message2357 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field2399: integer,
-          field2400: integer,
-          field2401: integer,
-          field2402: integer,
-          field2403: integer,
-          field2404: integer,
-          field2405: integer,
-          field2406: binary,
-          field2407: integer,
-          field2408: integer,
-          field2409: boolean,
-          field2410: binary
-        }
-  defstruct [
-    :field2399,
-    :field2400,
-    :field2401,
-    :field2402,
-    :field2403,
-    :field2404,
-    :field2405,
-    :field2406,
-    :field2407,
-    :field2408,
-    :field2409,
-    :field2410
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field2399, 9, optional: true, type: :int64
   field :field2400, 10, optional: true, type: :int32
@@ -1163,90 +523,17 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message2356.Message2358 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{}
-  defstruct []
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 end
 
 defmodule Benchmarks.GoogleMessage4.Message2356.Message2359 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{}
-  defstruct []
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 end
 
 defmodule Benchmarks.GoogleMessage4.Message2356 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field2368: Benchmarks.GoogleMessage4.Message1374.t() | nil,
-          field2369: non_neg_integer,
-          field2370: integer,
-          field2371: integer,
-          field2372: String.t(),
-          field2373: integer,
-          field2374: binary,
-          field2375: String.t(),
-          field2376: String.t(),
-          field2377: integer,
-          field2378: integer,
-          field2379: integer,
-          field2380: integer,
-          field2381: integer,
-          field2382: integer,
-          field2383: integer,
-          field2384: integer,
-          field2385: integer,
-          field2386: integer,
-          field2387: binary,
-          message2357: any,
-          field2389: String.t(),
-          message2358: any,
-          message2359: [any],
-          field2392: integer,
-          field2393: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field2394: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field2395: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field2396: Benchmarks.GoogleMessage4.UnusedEmptyMessage.t() | nil,
-          field2397: String.t(),
-          field2398: String.t()
-        }
-  defstruct [
-    :field2368,
-    :field2369,
-    :field2370,
-    :field2371,
-    :field2372,
-    :field2373,
-    :field2374,
-    :field2375,
-    :field2376,
-    :field2377,
-    :field2378,
-    :field2379,
-    :field2380,
-    :field2381,
-    :field2382,
-    :field2383,
-    :field2384,
-    :field2385,
-    :field2386,
-    :field2387,
-    :message2357,
-    :field2389,
-    :message2358,
-    :message2359,
-    :field2392,
-    :field2393,
-    :field2394,
-    :field2395,
-    :field2396,
-    :field2397,
-    :field2398
-  ]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field2368, 121, optional: true, type: Benchmarks.GoogleMessage4.Message1374
   field :field2369, 1, optional: true, type: :uint64
@@ -1283,24 +570,14 @@ end
 
 defmodule Benchmarks.GoogleMessage4.Message0 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{__pb_extensions__: map}
-  defstruct [:__pb_extensions__]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   extensions [{4, 2_147_483_647}]
 end
 
 defmodule Benchmarks.GoogleMessage4.Message971 do
   @moduledoc false
-  use Protobuf, syntax: :proto2
-
-  @type t :: %__MODULE__{
-          field972: String.t(),
-          field973: integer,
-          field974: boolean
-        }
-  defstruct [:field972, :field973, :field974]
+  use Protobuf, protoc_gen_elixir_version: "0.10.1-dev", syntax: :proto2
 
   field :field972, 1, optional: true, type: :string
   field :field973, 2, optional: true, type: :int32
